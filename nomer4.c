@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+// Here been SAMOXA :)
+
 void swap(int *a, int *b){
 	int tmp = *a;
 	*a = *b;

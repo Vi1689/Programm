@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 typedef struct{;
-	char str[11];
+	char str[5];
 	int num;
 } NumberRepr;
 

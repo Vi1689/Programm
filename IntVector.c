@@ -5,7 +5,7 @@
 
 IntVector*
 int_vector_new(size_t initial_capacity) // Создает массив нулевого размера.
-{
+{   
     IntVector* temp = malloc(sizeof(IntVector));
     if (!temp) {
         return NULL;
@@ -139,6 +139,7 @@ int int_vector_resize(
             return -1;
         }
         v->data = temp;
+        int_vector_reserve(v, new_size);
         for (int i = new_size - v->size; i < new_size; ++i) {
             v->data[i] = 0;
         }

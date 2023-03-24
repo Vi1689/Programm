@@ -7,8 +7,8 @@ int main()
     IntVector* a = int_vector_new(1);
     printf("Vector a : data : %p size : %ld capacity : %ld\nVector a : ",
            a->data,
-           a->size,
-           a->capacity);
+           int_vector_get_size(a),
+           int_vector_get_capacity(a));
     IntVector* b = int_vector_copy(a);
     for (int i = 0; i < 10; ++i) {
         int_vector_push_back(a, i);
@@ -28,8 +28,8 @@ int main()
     int_vector_resize(b, 100);
     printf("Vector b : data : %p size : %ld capacity : %ld\n",
            b->data,
-           b->size,
-           b->capacity);
+           int_vector_get_size(b),
+           int_vector_get_capacity(b));
     int_vector_push_back(b, 33);
     printf("Vector b : data : %p size : %ld capacity : %ld\n",
            b->data,
@@ -45,7 +45,7 @@ int main()
            a->size,
            a->capacity);
     int_vector_resize(a, 0);
-    printf("\nVector a : data : %p size : %ld capacity : %ld\n",
+    printf("Vector a : data : %p size : %ld capacity : %ld\n",
            a->data,
            a->size,
            a->capacity);
@@ -54,13 +54,13 @@ int main()
            a->data,
            a->size,
            a->capacity);
-           int_vector_pop_back(a);
-           printf("Vector a : data : %p size : %ld capacity : %ld\n",
+    int_vector_pop_back(a);
+    printf("Vector a : data : %p size : %ld capacity : %ld\n",
            a->data,
            a->size,
            a->capacity);
     int_vector_resize(a, 10);
-    for(int i = 0; i < 10; ++i){
+    for (int i = 0; i < 10; ++i) {
         int_vector_set_item(a, i, 10 - i);
         printf("%d ", int_vector_get_item(a, i));
     }

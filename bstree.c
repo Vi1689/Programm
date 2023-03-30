@@ -24,16 +24,16 @@ void bstree_add(struct bstree* tree, char* key, int value)
     struct bstree* node;
     while (tree != NULL) {
         parent = tree;
-        if (strcmp(key, tree->key) == -1) {
+        if (strcmp(key, tree->key) < 0) {
             tree = tree->left;
-        } else if (strcmp(key, tree->key) == 1) {
+        } else if (strcmp(key, tree->key) > 0) {
             tree = tree->right;
         } else {
             return;
         }
     }
     node = bstree_create(key, value);
-    if (strcmp(key, parent->key) == -1) {
+    if (strcmp(key, parent->key) < 0) {
         parent->left = node;
     } else {
         parent->right = node;
@@ -45,7 +45,7 @@ struct bstree* bstree_lookup(struct bstree* tree, char* key)
     while (tree != NULL) {
         if (strcmp(key, tree->key) == 0) {
             return tree;
-        } else if (strcmp(key, tree->key) == -1) {
+        } else if (strcmp(key, tree->key) < 0) {
             tree = tree->left;
         } else {
             tree = tree->right;
@@ -60,7 +60,7 @@ struct bstree* bstree_delete(struct bstree* tree, char* key)
     struct bstree* node = tree;
     while (node != NULL && node->key != key) {
         parent = node;
-        if (strcmp(key, node->key) == -1) {
+        if (strcmp(key, node->key) < 0) {
             node = node->left;
         } else {
             node = node->right;

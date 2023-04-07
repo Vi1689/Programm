@@ -106,7 +106,7 @@ void bestree_replanse(
         struct bstree* parent, struct bstree* node, struct bstree* child)
 {
     if (parent) {
-        if (strcmp(node->key, parent->key) == -1) {
+        if (strcmp(node->key, parent->key) < 0) {
             parent->left = child;
         } else {
             parent->right = child;

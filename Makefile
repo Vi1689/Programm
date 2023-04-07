@@ -1,8 +1,10 @@
-comp: main.o IntVector.o
-	gcc -Wall IntVector.o main.o -o main
-IntVector.o: IntVector.c
-	gcc -c IntVector.c
-main.o: main.c
-	gcc -c main.c
+comp: bstree.o hashtab.o bstree_main.o
+	gcc -Wall bstree.o hashtab.o bstree_main.o -o main
+bstree.o: bstree.c
+	gcc -c bstree.c
+hashtab.o: hashtab.c
+	gcc -c hashtab.c
+bstree_main.o: bstree_main.c
+	gcc -c bstree_main.c
 clean: 
-	rm IntVector.o main.o main
+	rm bstree.o bstree_main.o hashtab.o main

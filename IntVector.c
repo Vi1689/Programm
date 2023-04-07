@@ -29,13 +29,13 @@ int_vector_copy(const IntVector* v) // Указатель на копию век
         return NULL;
     }
     temp->data = malloc(sizeof(int) * v->capacity);
-    memcpy(temp->data, v->data, sizeof(int) * v->capacity);
-    temp->size = v->size;
-    temp->capacity = v->capacity;
     if (!temp->data) {
         free(temp);
         return NULL;
     }
+    memcpy(temp->data, v->data, sizeof(int) * v->capacity);
+    temp->size = v->size;
+    temp->capacity = v->capacity;
     return temp;
 }
 
@@ -86,11 +86,11 @@ int int_vector_push_back(
         if(!(v->capacity)){
             v->capacity = 1;
         }
-        v->capacity *= 2;
-        int* temp = realloc(v->data, sizeof(int) * v->capacity);
+        int* temp = realloc(v->data, sizeof(int) * v->capacity * 2);
         if (!temp) {
             return -1;
         }
+        v->capacity *= 2;
         v->data = temp;
         v->data[v->size] = item;
         v->size++;
@@ -140,7 +140,7 @@ int int_vector_resize(
         }
         v->data = temp;
         int_vector_reserve(v, new_size);
-        for (int i = new_size - v->size; i < new_size; ++i) {
+        for (int i = v->size; i < new_size; ++i) {
             v->data[i] = 0;
         }
     }

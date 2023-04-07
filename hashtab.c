@@ -3,12 +3,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-unsigned int hashtab_hash(char* key)
+/*unsigned int hashtab_hash(char* key)
 {
     unsigned int h = 0, hash_mul = 31;
     while (*key) {
         h = h * hash_mul + (unsigned int)*key++;
     }
+    return h % HASHTAB_SIZE;
+}
+*/
+unsigned int hashtab_hash(char* key)
+{
+    unsigned int h = 0;
+    while (*key) {
+        h += (unsigned int)*key++;
+        h += (h << 10);
+        h ^= (h >> 6);
+    }
+    h += (h << 3);
+    h ^= (h >> 11);
+    h += (h << 15);
     return h % HASHTAB_SIZE;
 }
 
@@ -19,7 +33,7 @@ void hashtab_init(struct listnode** hashtab)
     }
 }
 
-void hashtab_add(struct listnode** hashtab, char* key, int value)
+void hashtab_add(struct listnode** hashtab, char* key, int value, unsigned int* arr, unsigned int i)
 {
     struct listnode* node;
     int index = hashtab_hash(key);
@@ -29,6 +43,7 @@ void hashtab_add(struct listnode** hashtab, char* key, int value)
         node->value = value;
         node->next = hashtab[index];
         hashtab[index] = node;
+        arr[i] = index;
     }
 }
 

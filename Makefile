@@ -1,10 +1,8 @@
-comp: bstree.o hashtab.o bstree_main.o
-	gcc -Wall bstree.o hashtab.o bstree_main.o -o main
-bstree.o: bstree.c
-	gcc -c bstree.c
-hashtab.o: hashtab.c
-	gcc -c hashtab.c
-bstree_main.o: bstree_main.c
-	gcc -c bstree_main.c
+comp: CAOD_laba3.o binary_heap.o
+	gcc -Wall CAOD_laba3.o binary_heap.o -o main
+CAOD_laba3.o: CAOD_laba3.c
+	gcc -c CAOD_laba3.c
+binary_heap.o: binary_heap.c
+	gcc -c binary_heap.c
 clean: 
-	rm bstree.o bstree_main.o hashtab.o main
+	rm CAOD_laba3.o binary_heap.o main

@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-int main(){
-    FILE* encode = fopen("uncompressed.dat", "r");
-    FILE* decode = fopen("compressed.dat", "w");
-    
+int main(int argc, char* argv[])
+{
+    for(int i = 0; i < argc; ++i){
+        printf("argv[%d] = %s\n", i, argv[i]);
+    }
+    return 0;
 }

@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-typedef struct{;
-	char str[5];
+typedef struct{
+	char str[4];
 	int num;
 } NumberRepr;
 
@@ -10,7 +10,7 @@ void format(NumberRepr* number){
 }
 
 int main(){
-	NumberRepr number = {.num = 1025};
+	NumberRepr number = {.num = 1023};
 	format(&number);
 	printf("str: %s\n", number.str);
 	printf("num: %d\n", number.num);

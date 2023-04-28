@@ -1,3 +1,5 @@
+all: comp
+
 comp: CAOD_laba3.o binary_heap.o
 	gcc -Wall CAOD_laba3.o binary_heap.o -o main
 CAOD_laba3.o: CAOD_laba3.c

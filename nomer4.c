@@ -9,7 +9,7 @@ void swap(int *a, int *b){
 void bubble_sort(int *array, int size){
 	int i, j;
 	for(i = 0; i < size - 1; ++i){
-		for(j = 0; j < size - i; ++j){
+		for(j = 0; j < size - i - 1; ++j){
 			if(array[j] > array[j + 1]){
 				swap(&array[j], &array[j + 1]);
 			}
@@ -19,7 +19,7 @@ void bubble_sort(int *array, int size){
 
 int main(){
 	int array[100] = {10, 15, 5, 4, 21, 7};
-	bubble_sort(array, 5);
+	bubble_sort(array, 6);
 	int i;
 	for(i = 0; i < 6; ++i){
 		printf("%d ", array[i]);

@@ -1,33 +1,9 @@
+#include "coder.h"
 #include "command.h"
+#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-int encode_file(const char* in_file_name, const char* out_file_name)
-{
-    FILE* in_file = fopen("encode.txt", "r");
-    if (!in_file) {
-        return -1;
-    }
-    FILE* out_file = fopen("out_emcode.txt", "w");
-    if (!out_file) {
-        return -1;
-    }
-    return 0;
-}
-
-int decode_file(const char* in_file_name, const char* out_file_name)
-{
-    FILE* in_file = fopen("decode.txt", "r");
-    if (!in_file) {
-        return -1;
-    }
-    FILE* out_file = fopen("out_decode.txt", "w");
-    if (!out_file) {
-        return -1;
-    }
-    return 0;
-}
 
 int encode(uint32_t code_point, CodeUnit* code_units)
 {
@@ -84,7 +60,40 @@ uint32_t decode(const CodeUnit* code_unit)
 
 int read_next_code_unit(FILE* in, CodeUnit* code_units)
 {
-    
+    code_units->length = 0;
+    uint8_t byte;
+    while (code_units->length == 0) {
+        fread(&byte, sizeof(uint8_t), 1, in);
+        if (feof(in)) {
+            return -1;
+        }
+        if (byte < 0x80) {
+            code_units->code[code_units->length++] = byte;
+            return 0;
+        }
+        if (byte >= 0xc0) {
+            int i = 3;
+            for (uint8_t buf = byte >> 4; buf != 1; buf >>= 1, --i) {
+                if ((buf == 0x3) || (buf == 0x7) || (buf == 0xf)) {
+                    code_units->code[0] = byte;
+                    for (int j = 0; j != i; ++j) {
+                        fread(&byte, sizeof(uint8_t), 1, in);
+                        if ((byte >= 0x80) && (byte <= 0xbf)) {
+                            code_units->code[j + 1] = byte;
+                        } else if (!feof(in)) {
+                            fseek(in, -1, SEEK_CUR);
+                            return -1;
+                        } else {
+                            return -1;
+                        }
+                    }
+                    code_units->length = i + 1;
+                    break;
+                }
+            }
+        }
+        return 0;
+    }
 }
 
 int write_code_unit(FILE* out, const CodeUnit* code_unit)

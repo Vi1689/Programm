@@ -1,8 +1,6 @@
-#include "coder.h"
 #include <assert.h>
+#include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 size_t encode_varint(uint32_t value, uint8_t* buf)
 {

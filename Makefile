@@ -1,8 +1,21 @@
-comp: main.o IntVector.o
-	gcc -Wall IntVector.o main.o -o main
-IntVector.o: IntVector.c
-	gcc -c IntVector.c
-main.o: main.c
-	gcc -c main.c
+APP_NAME = main
+CODER = coder
+COMMAND = command
+MAIN = main_UTF
+
+SRC_DIR = src
+
+APP_PATH = $(SRC_DIR)/$(APP_NAME)
+
+all: $(APP_PATH)
+
+$(APP_PATH): $(SRC_DIR)/$(CODER).o $(SRC_DIR)/$(COMMAND).o $(SRC_DIR)/$(MAIN).o
+	gcc -Wall $^ -o $@
+$(SRC_DIR)/%.o: %.c
+	gcc -c $@
 clean: 
-	rm IntVector.o main.o main
+	rm  $(SRC_DIR)/*.o $(APP_PATH)
+run: 
+	./$(APP_PATH)
+
+.PHONY: all clean run

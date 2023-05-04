@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #define NUMBERS_COUNT 1000000
+#define conclusion 10
 /*
  * Диапазон Вероятность
  * -------------------- -----------
@@ -43,13 +44,13 @@ int main()
     uint32_t num;
     uint8_t buf[4];
     size_t size_of_encode;
-    size_t size_of_buf[100];
+    size_t size_of_buf[conclusion];
     for (i = 0; i < NUMBERS_COUNT; ++i) {
         num = generate_number();
         fwrite(&num, sizeof(uint32_t), 1, uncompressed);
         size_of_encode = encode_varint(num, buf);
         fwrite(buf, sizeof(uint8_t), size_of_encode, compressed);
-        if (i < 100) {
+        if (i < conclusion) {
             size_of_buf[i] = size_of_encode;
         }
     }
@@ -71,7 +72,7 @@ int main()
     rewind(compressed);
     uint32_t num_uncompressed = 0;
     uint32_t num_compressed = 0;
-    for (i = 0; i < 100; ++i) {
+    for (i = 0; i < conclusion; ++i) {
         fread(&num_uncompressed,
               sizeof(uint8_t),
               sizeof(uint32_t),

@@ -17,9 +17,9 @@ size_t encode_varint(uint32_t value, uint8_t* buf)
     return cur - buf;
 }
 
-uint32_t decode_varint(const uint8_t** bufp)
+uint32_t decode_varint(const uint8_t* bufp)
 {
-    const uint8_t* cur = *bufp;
+    const uint8_t* cur = bufp;
     uint8_t byte = *cur++;
     uint32_t value = byte & 0x7f;
     size_t shift = 7;
@@ -28,6 +28,6 @@ uint32_t decode_varint(const uint8_t** bufp)
         value += (byte & 0x7f) << shift;
         shift += 7;
     }
-    *bufp = cur;
+    //*bufp = cur;
     return value;
 }

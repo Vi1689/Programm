@@ -1,3 +1,6 @@
+#ifndef __stack__
+#define __stack__
+
 struct stack {
     float* a;
     int top;
@@ -23,3 +26,5 @@ void stack_free_char(struct stack_char* s);
 int stack_size_char(struct stack_char* s);
 int stack_push_char(struct stack_char* s, char value);
 int stack_pop_char(struct stack_char* s);
+
+#endif

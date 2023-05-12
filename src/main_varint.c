@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define NUMBERS_COUNT 1
-#define conclusion 1
+#define NUMBERS_COUNT 1000000
+#define conclusion 10
 /*
  * Диапазон Вероятность
  * -------------------- -----------
@@ -44,16 +44,12 @@ int main()
     uint32_t num;
     uint8_t buf[4];
     size_t size_of_encode;
-    size_t size_of_buf[conclusion];
     for (i = 0; i < NUMBERS_COUNT; ++i) {
-        //num = generate_number();
-        num = 0x31608;
+        num = generate_number();
+        //num = 0x31608;
         fwrite(&num, sizeof(uint32_t), 1, uncompressed);
         size_of_encode = encode_varint(num, buf);
         fwrite(buf, sizeof(uint8_t) * size_of_encode, size_of_encode, compressed);
-        if (i < conclusion) {
-            size_of_buf[i] = size_of_encode;
-        }
     }
     fclose(uncompressed);
     fclose(compressed);
@@ -74,10 +70,7 @@ int main()
     uint32_t num_uncompressed = 0;
     uint32_t num_compressed = 0;
     for (i = 0; i < conclusion; ++i) {
-        fread(&num_uncompressed,
-              sizeof(uint8_t) * size_of_encode,
-              1,
-              uncompressed);
+        fread(&num_uncompressed, sizeof(uint8_t) * size_of_encode, 4, uncompressed);
         fread(&num_compressed, sizeof(uint8_t) * size_of_encode, 1, compressed);
         const uint8_t* bufp = (uint8_t*)&num_compressed;
         num_compressed = decode_varint(&bufp);

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define NUMBERS_COUNT 1000000
+#define NUMBERS_COUNT 100
 #define conclusion 10
 /*
  * Диапазон Вероятность
@@ -49,7 +49,7 @@ int main()
         //num = 0x31608;
         fwrite(&num, sizeof(uint32_t), 1, uncompressed);
         size_of_encode = encode_varint(num, buf);
-        fwrite(buf, sizeof(uint8_t) * size_of_encode, size_of_encode, compressed);
+        fwrite(buf, sizeof(uint8_t) * size_of_encode, 1, compressed);
     }
     fclose(uncompressed);
     fclose(compressed);
@@ -59,26 +59,31 @@ int main()
         printf("Failed to open binary file for reading\n");
         return -1;
     }
-    // get size of files
     fseek(uncompressed, 0, SEEK_END);
     fseek(compressed, 0, SEEK_END);
-    printf("Size: %ld kb (uncompressed).\nSize: %ld kb(compressed).\n\n",
-           ftell(uncompressed) / 1024,
-           ftell(compressed) / 1024);
     rewind(uncompressed);
     rewind(compressed);
     uint32_t num_uncompressed = 0;
-    uint32_t num_compressed = 0;
+    uint8_t* bufp = malloc(200000000);
+    uint8_t byte;
+    i = 0;
+    while(!feof(compressed)){
+        fread(&byte, 1, 1, compressed);
+        bufp[i++] = byte;
+    }
+    uint8_t* one_buf = bufp;
     for (i = 0; i < conclusion; ++i) {
         fread(&num_uncompressed, sizeof(uint8_t) * size_of_encode, 4, uncompressed);
-        fread(&num_compressed, sizeof(uint8_t) * size_of_encode, 1, compressed);
-        const uint8_t* bufp = (uint8_t*)&num_compressed;
-        num_compressed = decode_varint(&bufp);
+        int qq = decode_varint(&bufp);
         printf("i = %d\t", i);
-        printf("%d\t", num_uncompressed);
-        printf("%d\n", num_compressed);
+        printf("%d\t ", num_uncompressed);
+        printf("%d\n", qq);
+        if(num_uncompressed != qq){
+            printf("Error");
+        }
     }
     fclose(uncompressed);
     fclose(compressed);
+    free(one_buf);
     return 0;
 }

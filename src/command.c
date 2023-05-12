@@ -31,6 +31,10 @@ int encode_file(const char* in_file_name, const char* out_file_name)
 
 int decode_file(const char* in_file_name, const char* out_file_name)
 {
+    /*FILE* ine = fopen(in_file_name,"w");
+    uint8_t massBroke[] = {0x9f, 0xef, 0xa9, 0xbb,0xe0, 0xe1, 0x81, 0xbf, 0xae,0xbb};
+    fwrite(massBroke, sizeof(massBroke[0]),9,ine);
+    fclose(ine);*/
     CodeUnit code_units;
     FILE* in_file = fopen(in_file_name, "rb");
     if (!in_file) {

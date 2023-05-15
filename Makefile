@@ -1,10 +1,19 @@
-all: comp
+APP_NAME = KP_proga
+CODER = stack
 
-comp: CAOD_laba3.o binary_heap.o
-	gcc -Wall CAOD_laba3.o binary_heap.o -o main
-CAOD_laba3.o: CAOD_laba3.c
-	gcc -c CAOD_laba3.c
-binary_heap.o: binary_heap.c
-	gcc -c binary_heap.c
+SRC_DIR = src
+
+APP_PATH = $(SRC_DIR)/$(APP_NAME)
+
+all: $(APP_PATH)
+
+$(APP_PATH): $(SRC_DIR)/$(CODER).o $(SRC_DIR)/$(APP_NAME).o
+	gcc -Wall $^ -o $@
+$(SRC_DIR)/%.o: %.c
+	gcc -c $@
 clean: 
-	rm CAOD_laba3.o binary_heap.o main
+	rm  $(SRC_DIR)/*.o $(APP_PATH)
+run: 
+	./$(APP_PATH)
+
+.PHONY: all clean run

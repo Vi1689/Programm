@@ -1,20 +1,23 @@
 APP_NAME = main
-CODER = coder
-COMMAND = command
-MAIN = main_UTF
+PROCESS = process
+INPUT_OUTPUT = input_output
+CHECK = check
+STRINGS = strings
 
-SRC_DIR = src
+LABA4_INCLUDE = laba4/include
 
-APP_PATH = $(SRC_DIR)/$(APP_NAME)
+APP_PATH = laba4/$(APP_NAME)/$(APP_NAME)
 
 all: $(APP_PATH)
 
-$(APP_PATH): $(SRC_DIR)/$(CODER).o $(SRC_DIR)/$(COMMAND).o $(SRC_DIR)/$(MAIN).o
+$(APP_PATH): $(LABA4_INCLUDE)/$(PROCESS).o $(LABA4_INCLUDE)/$(INPUT_OUTPUT).o $(LABA4_INCLUDE)/$(CHECK).o $(LABA4_INCLUDE)/$(STRINGS).o laba4/$(APP_NAME)/laba-4.o
 	gcc -Wall $^ -o $@
-$(SRC_DIR)/%.o: %.c
+$(LABA4_INCLUDE)/%.o: %.c
+	gcc -c $@
+laba4/$(APP_NAME)/%.o: %.c
 	gcc -c $@
 clean: 
-	rm  $(SRC_DIR)/*.o $(APP_PATH)
+	rm  $(LABA4_INCLUDE)/*.o $(APP_PATH) laba4/$(APP_NAME)/*.o
 run: 
 	./$(APP_PATH)
 

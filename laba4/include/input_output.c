@@ -9,11 +9,11 @@ char* input(char* str)
     return str;
 }
 
-void output(char* paths, char* delim)
+void output(char* paths, char* delim, char* dir)
 {
-    switch (check(paths, delim)) {
+    switch (check(paths, delim, dir)) {
     case 0:
-        printf("new paths : %s\n", process(paths, delim));
+        printf("new paths : %s\n", process(paths, delim, dir));
         break;
     case 1:
         printf("The delim is entered incorrectly\n");
@@ -27,5 +27,7 @@ void output(char* paths, char* delim)
     case 4:
         printf("Invalid file path\n");
         break;
+    case 5:
+        printf("Directory name entered incorrectly\n");
     }
 }

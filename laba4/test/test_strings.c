@@ -1,5 +1,7 @@
 #include </home/vitaliy/Programm/laba4/include/strings.c>
 #include "ctest.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 CTEST(strings, slen)
 {
@@ -34,12 +36,13 @@ CTEST(strings, scmp)
     result = scmp("abdc", "abdc");
     ASSERT_EQUAL(expected, result);
 }
-    /*
+/*
+CTEST(strings, scpy) {
     char expected1[] = "0123456789";
     char* result1 = malloc(sizeof(char) * 20);
     result1 = scpy(result1, expected1, 10);
-    ASSERT_EQUAL(expected1, result1);
-    free(result);
+    ASSERT_STR(expected1, result1);
+    free(result1);
 }
 
 CTEST(strings, erase)
@@ -47,7 +50,7 @@ CTEST(strings, erase)
     char expected[] = "relt";
     char* result = malloc(sizeof(char) * 20);
     result = erase("result", 3, 5);
-    ASSERT_EQUAL(expected, result);
+    ASSERT_STR(expected, result);
     free(result);
 }
 
@@ -56,7 +59,7 @@ CTEST(strings, copy_m)
     char expected[] = "0123456789";
     char* result = malloc(sizeof(char) * 20);
     result = copy_m(result, expected, 0, 0);
-    ASSERT_EQUAL(expected, result);
+    ASSERT_STR(expected, result);
     free(result);
 }
 */

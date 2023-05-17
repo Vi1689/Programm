@@ -4,4 +4,4 @@
 #include <stdlib.h>
 
 char* input(char* str);
-void output(char* paths, char* delim);
+void output(char* paths, char* delim, char* dir);

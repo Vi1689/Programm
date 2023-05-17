@@ -10,7 +10,7 @@ TEST = laba4/test
 APP_PATH = laba4/$(APP_NAME)/$(APP_NAME)
 TEST_PATH = $(TEST)/test
 
-GG = -Wall -I src -Ithirdparty -MP -MMD
+GG = -Wall -I laba4 -Ithirdparty -MMD
 
 all: $(APP_PATH)
 
@@ -29,6 +29,9 @@ test: $(TEST_PATH)
 
 $(TEST_PATH): $(TEST)/test_check.o $(TEST)/test_process.o $(TEST)/test_strings.o $(TEST)/main.c
 	gcc $(GG) $^ -o $@
+
+laba4/test/%.o: %.c
+	gcc  -c -I laba4 $@
 
 test_run: $(TEST_PATH)
 	./$(TEST_PATH)

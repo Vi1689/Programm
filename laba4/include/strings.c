@@ -70,7 +70,7 @@ char* scpy(char* destination, const char* source, int n)
     return destination;
 }
 
-char* erase(char* str, int s, int e)
+char* erase(const char* str, int s, int e)
 {
     char* temp = malloc(sizeof(char) * (slen(str) - 2));
     int k = 0;

@@ -10,11 +10,20 @@ int check(char* str, char* delim, char* dir)
     if (sspn(str, sym)) {
         return 2;
     }
-    if(sspn(dir, sym)){
+    if (sspn(dir, sym)) {
         return 5;
     }
-    if (slen(str) > 260) {
-        return 3;
+    char* temp = malloc(sizeof(char) * slen(str));
+    int* ls;
+    int count = 0;
+    ls = stok(temp, delim, &count);
+    for (int i = 0; i < count; ++i) {
+        temp = copy_m(temp, str, ls[i], 0);
+        if (slen(temp) > 260) {
+            free(ls);
+            free(temp);
+            return 3;
+        }
     }
     if (check_paths(str, delim)) {
         return 4;

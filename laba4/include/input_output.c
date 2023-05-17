@@ -4,7 +4,7 @@
 
 char* input(char* str)
 {
-    fgets(str, 300, stdin);
+    fgets(str, 500, stdin);
     fflush(stdin);
     return str;
 }

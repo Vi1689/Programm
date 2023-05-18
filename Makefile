@@ -1,21 +1,27 @@
-all: main
+APP_MAIN = main
+APP_CALC = calc
+APP_CHECK = check
+APP_STACK = stack
+APP_KP = KP_proga
 
-main: KP_proga.o calc.o stack.o check.o
+SRC_DIR = src
+LIB_STATIC = proga
+LIB_DIR = libproga
+
+APP_PATH = $(SRC_DIR)/$(LIB_STATIC)/$(APP_MAIN)
+
+all: $(APP_PATH)
+
+$(APP_PATH): $(SRC_DIR)/$(LIB_DIR)/$(APP_CALC).o $(SRC_DIR)/$(LIB_DIR)/$(APP_CHECK).o $(SRC_DIR)/$(LIB_DIR)/$(APP_STACK).o $(SRC_DIR)/$(LIB_STATIC)/$(APP_KP).o
 	gcc -Wall $^ -o $@
 
-KP_proga.o:
-	gcc -c KP_proga.c -o KP_proga.o
+$(SRC_DIR)/$(LIB_DIR)/%.o: %.c
+	gcc -c -Wall $< -o $@
 
-calc.o:
-	gcc -c calc.c -o calc.o
-
-stack.o:
-	gcc -c stack.c -o stack.o
-
-check.o:
-	gcc -c check.c -o check.o
+$(SRC_DIR)/$(LIB_STATIC)/%.o: %.c
+	gcc -c -Wall $< -o $@
 
 clean:
-	rm stack.o calc.o KP_proga.o main check.o
+	rm $(SRC_DIR)/$(LIB_DIR)/*.o $(SRC_DIR)/$(LIB_STATIC)/*.o $(APP_PATH)
 
 .PHONY: all clean run

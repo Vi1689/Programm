@@ -1,6 +1,4 @@
-#include "calc.h"
-#include "check.h"
-#include "stack.h"
+#include <libproga/check.h>
 #include <stdio.h>
 
 int main(int argc, char** argv)

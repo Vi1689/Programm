@@ -1,19 +1,21 @@
-APP_NAME = KP_proga
-CODER = stack
+all: main
 
-SRC_DIR = src
-
-APP_PATH = $(SRC_DIR)/$(APP_NAME)
-
-all: $(APP_PATH)
-
-$(APP_PATH): $(SRC_DIR)/$(CODER).o $(SRC_DIR)/$(APP_NAME).o
+main: KP_proga.o calc.o stack.o check.o
 	gcc -Wall $^ -o $@
-$(SRC_DIR)/%.o: %.c
-	gcc -c $@
-clean: 
-	rm  $(SRC_DIR)/*.o $(APP_PATH)
-run: 
-	./$(APP_PATH)
+
+KP_proga.o:
+	gcc -c KP_proga.c -o KP_proga.o
+
+calc.o:
+	gcc -c calc.c -o calc.o
+
+stack.o:
+	gcc -c stack.c -o stack.o
+
+check.o:
+	gcc -c check.c -o check.o
+
+clean:
+	rm stack.o calc.o KP_proga.o main check.o
 
 .PHONY: all clean run

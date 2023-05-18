@@ -12,16 +12,16 @@ APP_PATH = $(SRC_DIR)/$(LIB_STATIC)/$(APP_MAIN)
 
 all: $(APP_PATH)
 
-$(APP_PATH): $(SRC_DIR)/$(LIB_DIR)/$(APP_CALC).o $(SRC_DIR)/$(LIB_DIR)/$(APP_CHECK).o $(SRC_DIR)/$(LIB_DIR)/$(APP_STACK).o $(SRC_DIR)/$(LIB_STATIC)/$(APP_KP).o
+$(APP_PATH): $(SRC_DIR)/$(LIB_DIR)/$(APP_CALC).o $(SRC_DIR)/$(LIB_DIR)/$(APP_CHECK).o $(SRC_DIR)/$(LIB_DIR)/$(APP_STACK).o $(SRC_DIR)/$(LIB_STATIC)/$(APP_KP).o 
 	gcc -Wall $^ -o $@
 
 $(SRC_DIR)/$(LIB_DIR)/%.o: %.c
-	gcc -c -Wall $< -o $@
+	gcc -c -Wall -I src $< -o $@
 
-$(SRC_DIR)/$(LIB_STATIC)/%.o: %.c
-	gcc -c -Wall $< -o $@
+$(SRC_DIR)/$(LIB_STATIC)/$(APP_KP).o: $(SRC_DIR)/$(LIB_STATIC)/$(APP_KP).c
+	gcc -c -Wall -I src $< -o $@
 
 clean:
 	rm $(SRC_DIR)/$(LIB_DIR)/*.o $(SRC_DIR)/$(LIB_STATIC)/*.o $(APP_PATH)
 
-.PHONY: all clean run
+.PHONY: all clean

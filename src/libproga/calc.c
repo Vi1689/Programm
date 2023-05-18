@@ -33,7 +33,7 @@ int calc(struct stack* number, struct stack* op)
     return 0;
 }
 
-int rang(int a)
+int priority(int a)
 {
     if (a == 43 || a == 45) {
         return 1;

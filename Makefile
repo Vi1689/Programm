@@ -21,7 +21,10 @@ $(SRC_DIR)/$(LIB_DIR)/%.o: %.c
 $(SRC_DIR)/$(LIB_STATIC)/$(APP_KP).o: $(SRC_DIR)/$(LIB_STATIC)/$(APP_KP).c
 	gcc -c -Wall -I src $< -o $@
 
+test:
+	gcc -Wall -I src test/test_calc.c test/main.c -o test
+
 clean:
 	rm $(SRC_DIR)/$(LIB_DIR)/*.o $(SRC_DIR)/$(LIB_STATIC)/*.o $(APP_PATH)
 
-.PHONY: all clean
+.PHONY: all clean test

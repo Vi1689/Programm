@@ -77,7 +77,7 @@ void* check(char* new_str, float* value)
                 if (stack_push(op, str[i])) {
                     return NULL;
                 }
-            } else if (stack_size(op) && rang(str[i]) > rang(stack_top(op))) {
+            } else if (stack_size(op) && priority(str[i]) > priority(stack_top(op))) {
                 if (!flag_sk) {
                     if (stack_push(number, atof(numder_char))) {
                         return NULL;
@@ -88,7 +88,7 @@ void* check(char* new_str, float* value)
                 if (stack_push(op, str[i])) {
                     return NULL;
                 }
-            } else if (stack_size(op) && rang(str[i]) <= rang(stack_top(op))) {
+            } else if (stack_size(op) && priority(str[i]) <= priority(stack_top(op))) {
                 if (!flag_sk) {
                     if (stack_push(number, atof(numder_char))) {
                         return NULL;

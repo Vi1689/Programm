@@ -32,6 +32,12 @@ void* check(char* new_str, float* value)
             printf("Неправильное расположение скобок\n");
             return NULL;
         }
+        if (str[i] == '(' && str[i + 2] == ')'
+            && (str[i + 1] == '+' || str[i + 1] == '-' || str[i + 1] == '*'
+                || str[i + 1] == '/')) {
+            printf("Неправильное расположение знака\n");
+            return NULL;
+        }
     }
     if (flag != flag_sk) {
         printf("Недостаточно скобок\n");

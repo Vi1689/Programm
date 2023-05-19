@@ -37,6 +37,13 @@ CTEST(calc, calc)
     calc(number, op);
     result = stack_pop(number);
     ASSERT_EQUAL(expected, result);
+
+    stack_push(number, 2);
+    stack_push(number, 2);
+    stack_push(op, 90);
+    expected = 1;
+    result = calc(number, op);
+    ASSERT_EQUAL(expected, result);
     stack_free(number);
     stack_free(op);
 }

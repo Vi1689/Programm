@@ -1,3 +1,3 @@
 #pragma once
 
-void* check(char* str, float* value);
+void* check(const char* new_str, float* value);

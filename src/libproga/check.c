@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void* check(char* new_str, float* value)
+void* check(const char* new_str, float* value)
 {
     char* str = malloc(sizeof(char) * strlen(new_str));
     for (int i = 0, k = 0; i < strlen(new_str); ++i) {
@@ -13,8 +13,8 @@ void* check(char* new_str, float* value)
             str[k++] = new_str[i];
         }
     }
-    struct stack* number = stack_create(50);
-    struct stack* op = stack_create(50);
+    struct stack* number = stack_create(strlen(str));
+    struct stack* op = stack_create(strlen(str));
     char* numder_char = malloc(sizeof(char) * 10);
     int k = 0, flag = 0, flag_sk = 0, flag_t = 0;
     for (int i = 0; i < strlen(str); ++i) {
@@ -50,17 +50,17 @@ void* check(char* new_str, float* value)
             printf("Неправильно написано вещественное число\n");
             return NULL;
         }
-        if (str[i] >= '0' && str[i] <= '9' || str[i] == '.' && !flag_t
-            || str[i] == '-' && flag) {
+        if ((str[i] >= '0' && str[i] <= '9') || (str[i] == '.' && !flag_t)
+            || (str[i] == '-' && flag)) {
             numder_char[k++] = str[i];
             flag = 0;
             if (str[i] == '.') {
                 flag_t++;
             }
         } else if (
-                str[i] == '+' || str[i] == '-' && !flag || str[i] == '/'
+                str[i] == '+' || (str[i] == '-' && !flag) || str[i] == '/'
                 || str[i] == '*') {
-            if (str[i + 1] == '+' || str[i + 1] == '-' && !flag
+            if (str[i + 1] == '+' || (str[i + 1] == '-' && !flag)
                 || str[i + 1] == '/' || str[i + 1] == '*'
                 || str[i + 1] == '\0') {
                 printf("Неправильное расположение знака\n");
@@ -77,7 +77,9 @@ void* check(char* new_str, float* value)
                 if (stack_push(op, str[i])) {
                     return NULL;
                 }
-            } else if (stack_size(op) && priority(str[i]) > priority(stack_top(op))) {
+            } else if (
+                    stack_size(op)
+                    && priority(str[i]) > priority(stack_top(op))) {
                 if (!flag_sk) {
                     if (stack_push(number, atof(numder_char))) {
                         return NULL;
@@ -88,7 +90,9 @@ void* check(char* new_str, float* value)
                 if (stack_push(op, str[i])) {
                     return NULL;
                 }
-            } else if (stack_size(op) && priority(str[i]) <= priority(stack_top(op))) {
+            } else if (
+                    stack_size(op)
+                    && priority(str[i]) <= priority(stack_top(op))) {
                 if (!flag_sk) {
                     if (stack_push(number, atof(numder_char))) {
                         return NULL;

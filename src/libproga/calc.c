@@ -29,6 +29,8 @@ int calc(struct stack* number, struct stack* op)
             return 1;
         }
         break;
+    default:
+        return 1;
     }
     return 0;
 }

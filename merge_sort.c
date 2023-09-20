@@ -46,25 +46,3 @@ void mergeSort(int* arr, int l, int r)
         merge(arr, l, m, r);
     }
 }
-
-int main()
-{
-    int n, count = 0;
-    scanf("%d", &n);
-    n += 2;
-    int* a = malloc(sizeof(int) * n);
-    for (int i = 1; i < n - 1; ++i) {
-        scanf("%d", &a[i]);
-    }
-    a[0] = 0;
-    a[n - 1] = 0;
-    mergeSort(a, 0, n - 2);
-    for (int i = 1; i < n - 1; ++i) {
-        if (a[i - 1] != a[i] && a[i + 1] != a[i]) {
-            count++;
-        }
-    }
-    printf("%d", count);
-    free(a);
-    return 0;
-}

@@ -25,6 +25,14 @@ void print_matrix(int** matrix, int size)
     }
 }
 
+void print_arr(int* D, int size)
+{
+    for (int i = 0; i < size; ++i) {
+        cout << D[i] << " ";
+    }
+    cout << "\n";
+}
+
 int* creating_D(int size)
 {
     int* D = new int[size];
@@ -47,10 +55,7 @@ void punkt_a(int* D, int size, int** matrix)
         }
     }
     cout << "Punkt a: ";
-    for (int i = 0; i < k; ++i) {
-        cout << D[i] << " ";
-    }
-    cout << "\n";
+    print_arr(D, k);
 }
 
 void punkt_b(int* D, int size, int** matrix)
@@ -69,10 +74,7 @@ void punkt_b(int* D, int size, int** matrix)
         }
     }
     cout << "Punkt b: ";
-    for (int i = 0; i < k; ++i) {
-        cout << D[i] << " ";
-    }
-    cout << "\n";
+    print_arr(D, k);
 }
 
 void punkt_c(int* D, int size, int** matrix)
@@ -99,10 +101,7 @@ void punkt_c(int* D, int size, int** matrix)
     }
     D[k--] = matrix[i][j];
     cout << "Punkt c: ";
-    for (int i = 0; i < size * size; ++i) {
-        cout << D[i] << " ";
-    }
-    cout << "\n";
+    print_arr(D, size * size);
 }
 
 void punkt_d(int* D, int size, int** matrix)
@@ -129,10 +128,31 @@ void punkt_d(int* D, int size, int** matrix)
     }
     D[k++] = matrix[i][j];
     cout << "Punkt d: ";
-    for (int i = 0; i < k; ++i) {
-        cout << D[i] << " ";
+    print_arr(D, k);
+}
+
+void Task_2(int n)
+{
+    int** a = new int*[n];
+    int* b = new int[n];
+    for (int i = 0; i < n; ++i) {
+        b[i] = rand() % 5 + 1;
+        a[i] = new int[b[i]];
+        for (int j = 0; j < b[i]; ++j) {
+            a[i][j] = rand() % 100;
+        }
     }
-    cout << "\n";
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < b[i]; ++j) {
+            cout << a[i][j] << " ";
+        }
+        cout << "\n";
+    }
+    for (int i = 0; i < n; ++i) {
+        free(a[i]);
+    }
+    free(a);
+    free(b);
 }
 
 int main()
@@ -154,24 +174,5 @@ int main()
     free(D);
     cout << "\nЗадание 2\n";
     int n = rand() % 5 + 1;
-    int** a = new int*[n];
-    int* b = new int[n];
-    for (int i = 0; i < n; ++i) {
-        b[i] = rand() % 5 + 1;
-        a[i] = new int[b[i]];
-        for (int j = 0; j < b[i]; ++j) {
-            a[i][j] = rand() % 100;
-        }
-    }
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < b[i]; ++j) {
-            cout << a[i][j] << " ";
-        }
-        cout << "\n";
-    }
-    for (int i = 0; i < n; ++i) {
-        free(a[i]);
-    }
-    free(a);
-    free(b);
+    Task_2(n);
 }

@@ -149,10 +149,10 @@ void Task_2(int n)
         cout << "\n";
     }
     for (int i = 0; i < n; ++i) {
-        free(a[i]);
+        delete[] a[i];
     }
-    free(a);
-    free(b);
+    delete[] a;
+    delete[] b;
 }
 
 int main()
@@ -168,10 +168,10 @@ int main()
     punkt_c(D, size, matrix);
     punkt_d(D, size, matrix);
     for (int i = 0; i < size; ++i) {
-        free(matrix[i]);
+        delete[] matrix[i];
     }
-    free(matrix);
-    free(D);
+    delete[] matrix;
+    delete[] D;
     cout << "\nЗадание 2\n";
     int n = rand() % 5 + 1;
     Task_2(n);

@@ -1,13 +1,30 @@
-all: laba2.o
-	g++ laba2.o -o main
+APP_NAME = main
+LIB_STATIC = laba_7
+LIB_DYNAMIC = my_list
+
+
+all: $(LIB_STATIC)/$(LIB_STATIC).o gdb $(LIB_STATIC)/$(LIB_DYNAMIC).o
+	g++ $(LIB_STATIC)/$(LIB_STATIC).o  $(LIB_STATIC)/$(LIB_DYNAMIC).o -o $(LIB_STATIC)/$(APP_NAME)
 
 run:
-	./main
+	./$(LIB_STATIC)/$(APP_NAME)
 
-laba2.o: laba2.cpp
-	gcc -c laba2.cpp
+$(LIB_STATIC)/$(LIB_STATIC).o: $(LIB_STATIC)/$(LIB_STATIC).cpp
+	g++ -c $(LIB_STATIC)/$(LIB_STATIC).cpp -o $(LIB_STATIC)/$(LIB_STATIC).o
+
+$(LIB_STATIC)/$(LIB_DYNAMIC).o: $(LIB_STATIC)/$(LIB_DYNAMIC).cpp
+	g++ -c $(LIB_STATIC)/$(LIB_DYNAMIC).cpp -o $(LIB_STATIC)/$(LIB_DYNAMIC).o
 
 clean: 
-	rm main laba2.o
+	rm $(LIB_STATIC)/$(APP_NAME) $(LIB_STATIC)/$(LIB_STATIC).o $(APP_NAME) $(LIB_STATIC)/$(LIB_DYNAMIC).o
 
-.PHONY: all clean run 
+gdb:
+	g++ -g $(LIB_STATIC)/$(LIB_STATIC).cpp $(LIB_STATIC)/$(LIB_DYNAMIC).cpp -o $(APP_NAME)
+
+gdb_run:
+	gdb main
+
+valgrind:
+	valgrind --tool=memcheck --leak-check=yes ./$(APP_NAME)
+
+.PHONY: all clean run gdb gdb_run valgrind

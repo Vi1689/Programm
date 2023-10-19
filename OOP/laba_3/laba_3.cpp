@@ -16,7 +16,7 @@ public:
         n = 0;
         m = 0;
         summ = 0;
-        a = NULL;
+        a = nullptr;
     }
 
     matrix(int size)
@@ -109,7 +109,7 @@ public:
 int main()
 {
     srand(time(NULL));
-    // matrix M1();
+    matrix M1;
     matrix M2(3);
     matrix M3(3, 4);
     matrix M4(2, 3);

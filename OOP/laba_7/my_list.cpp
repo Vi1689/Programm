@@ -1,5 +1,10 @@
 #include "my_list.h"
 
+int list::size()
+{
+    return count;
+}
+
 list::list(int _key, std::string _value)
 {
     node = list_create(_key, _value);
@@ -10,7 +15,7 @@ list::list(int _key, std::string _value)
 
 list::list()
 {
-    node = list_create(rand() % 10, "puck");
+    node = list_create(rand() % 100, "rand");
     begin = node;
     end = node;
     count++;
@@ -58,8 +63,8 @@ void list::lookup(int _key)
         }
         nodee = nodee->prev;
     }
-    std::cout << "Нет такого ключа"
-              << "\n";
+    throw "Нет такого ключа";
+    // std::cout << "Нет такого ключа" << "\n";
 }
 
 void list::lookup(std::string _value)
@@ -72,8 +77,8 @@ void list::lookup(std::string _value)
         }
         nodee = nodee->prev;
     }
-    std::cout << "Нет такого значения"
-              << "\n";
+    throw "Нет такого ключа";
+    // std::cout << "Нет такого значения" << "\n";
 }
 
 void list::free_list()
@@ -121,7 +126,8 @@ void list::delete_node(int _key)
             nodee = nodee->prev;
         }
     }
-    std::cout << "Такого ключа нет\n";
+    throw "Нет такого ключа";
+    // std::cout << "Такого ключа нет\n";
 }
 
 void list::delete_node(std::string _value)
@@ -158,7 +164,8 @@ void list::delete_node(std::string _value)
             nodee = nodee->prev;
         }
     }
-    std::cout << "Такого значения нет\n";
+    throw "Нет такого ключа";
+    // std::cout << "Такого значения нет\n";
 }
 
 void list::print()
@@ -194,6 +201,9 @@ void stack::print()
 void stack::delete_node()
 {
     struct Node* nodee = end;
+    if (!nodee) {
+        throw "Нечего удалять";
+    }
     if (nodee->next == nullptr && nodee->prev == nullptr) {
         begin = nullptr;
         end = nullptr;
@@ -230,6 +240,9 @@ void queue::print()
 void queue::delete_node()
 {
     struct Node* nodee = begin;
+    if (!nodee) {
+        throw "Нечего удалять";
+    }
     if (nodee->next == nullptr && nodee->prev == nullptr) {
         begin = nullptr;
         end = nullptr;

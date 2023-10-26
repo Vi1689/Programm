@@ -4,45 +4,47 @@ using namespace std;
 
 int main()
 {
-    cout << "Queue\n";
-    queue a(1, "Hello");
-    a.add(2, "qwe");
-    a.add(3, "qweqwe");
-    a.add(4, "qqwesade");
-    a.print();
-    a.delete_node();
-    a.print();
-    a.delete_node();
-    a.print();
-    a.delete_node();
-    a.print();
-    a.delete_node();
-    a.add(3, "qweqwe");
-    a.print();
-    cout << "Stack\n";
-    stack b(1, "Hello");
-    b.add(2, "qwe");
-    b.add(3, "qweqwe");
-    b.add(4, "qqwesade");
-    b.print();
-    b.delete_node();
-    b.print();
-    b.delete_node();
-    b.print();
-    b.delete_node();
-    b.print();
-    b.delete_node();
-    b.add(3, "qweqwe");
-    b.print();
-    cout << "List\n";
-    list c(1, "sad");
-    c.add_begin(2, "qwe");
-    c.add_end(3, "axcz");
-    c.print();
-    c.delete_node("sad");
-    c.print();
-    c.delete_node(2);
-    c.print();
-    c.delete_node(3);
-    c.print();
+    try {
+        cout << "Queue\n";
+        queue a(0, "hello");
+        a.print();
+        for (int i = 1; i < 4; ++i) {
+            a.add(i, "the");
+            a.print();
+        }
+        for (int i = 0; i < 4; ++i) {
+            a.delete_node();
+            a.print();
+        }
+        cout << "Stack\n";
+        stack b(0, "Hello");
+        b.print();
+        for (int i = 1; i < 4; ++i) {
+            b.add(i, "the");
+            b.print();
+        }
+        for (int i = 0; i < 4; ++i) {
+            b.delete_node();
+            b.print();
+        }
+        cout << "List\n";
+        list c(0, "bay");
+        c.print();
+        for (int i = 1; i < 4; ++i) {
+            if (i % 2) {
+                c.add_begin(i, "qwe");
+                c.print();
+            } else {
+                c.add_end(i, "axcz");
+                c.print();
+            }
+        }
+        for (int i = 0; i < 4; ++i) {
+            c.delete_node(i);
+            c.print();
+        }
+    } catch (const char* s) {
+        cout << s << "\n";
+        return 0;
+    }
 }

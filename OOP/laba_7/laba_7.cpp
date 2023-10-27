@@ -46,5 +46,8 @@ int main()
     } catch (const char* s) {
         cout << s << "\n";
         return 0;
+    } catch (...) {
+        cout << "Error\n";
+        return 0;
     }
 }

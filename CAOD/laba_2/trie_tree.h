@@ -15,6 +15,4 @@ char* trie_lookup(struct trie* root, char* value);
 struct trie* trie_delete(struct trie* root, char* value);
 struct trie* trie_delete_dfs(
         struct trie* root, struct trie* parent, char* value, int* found);
-// struct trie* Getchild(struct trie* root, char value);
-// void Setchild(struct trie* root, char value, struct trie* child);
 void trie_print(struct trie* root, int level);

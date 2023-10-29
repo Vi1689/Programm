@@ -11,44 +11,6 @@ struct trie* trie_create()
     node->child = NULL;
     node->sibling = NULL;
 }
-/*
-struct trie* trie_insert(struct trie* root, char* value, char ch)
-{
-    struct trie* node = root;
-    unsigned int l = strlen(value);
-    for (int i = 0; i < l; ++i) {
-        child = Getchild(node, value[i]);
-        if (!child) {
-            child = trie_create();
-            Setchild(node, value[i], child);
-        }
-        node = child;
-    }
-    node->ch = ch;
-    return root;
-}
-
-struct trie* Getchild(struct trie* root, char value)
-{
-    if (root->ch == value) {
-        if (root->child == NULL) {
-            return NULL;
-        } else if (root->child->ch == value) {
-            return root->child;
-        } else if (root->sibling == NULL) {
-            return NULL;
-        } else {
-            return root->sibling;
-        }
-    } else {
-        return root->sibling;
-    }
-}
-
-void Setchild(struct trie* root, char value, struct trie* child){
-
-}
-*/
 
 char* trie_lookup(struct trie* root, char* value)
 {
@@ -141,4 +103,12 @@ trie_delete_dfs(struct trie* root, struct trie* parent, char* value, int* found)
         free(node);
     }
     return root;
+}
+
+void trie_print(struct trie* root, int level){
+    struct trie* node = root;
+    if (root){
+        trie_print(node->child, level++);
+        printf();
+    }
 }

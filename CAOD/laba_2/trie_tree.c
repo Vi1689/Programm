@@ -12,39 +12,45 @@ struct trie* trie_create()
     node->sibling = NULL;
 }
 
-char* trie_lookup(struct trie* root, char* value)
+char* trie_lookup(struct trie* root, char* string)
 {
     struct trie* node;
     struct trie* list;
-    for (list = root; *value != '\0'; ++value) {
+    for (list = root; *string != '\0'; ++string) {
         for (node = list; node != NULL; node = node->sibling) {
-            if (node->ch == *value) {
+            if (node->ch == *string) {
                 break;
             }
         }
         if (node != NULL) {
             list = node->child;
         } else {
+            printf("Такой строчки нет\n");
             return NULL;
         }
     }
-    return value;
+    if (node->value) {
+        return node->value;
+    } else {
+        printf("Такой строчки нет\n");
+        return NULL;
+    }
 }
 
-struct trie* trie_insert(struct trie* root, char* value, char ch)
+struct trie* trie_insert(struct trie* root, char* string, char* value)
 {
     struct trie* node;
     struct trie* parent = NULL;
     struct trie* list = root;
-    for (; *value != '\0'; ++value) {
+    for (; *string != '\0'; ++string) {
         for (node = list; node != NULL; node = node->sibling) {
-            if (node->ch == *value) {
+            if (node->ch == *string) {
                 break;
             }
         }
         if (node == NULL) {
             node = trie_create();
-            node->ch = *value;
+            node->ch = *string;
             node->sibling = list;
             if (parent != NULL) {
                 parent->child = node;
@@ -64,10 +70,10 @@ struct trie* trie_insert(struct trie* root, char* value, char ch)
     return root;
 }
 
-struct trie* trie_delete(struct trie* root, char* value)
+struct trie* trie_delete(struct trie* root, char* string)
 {
     int found;
-    return trie_delete_dfs(root, NULL, value, &found);
+    return trie_delete_dfs(root, NULL, string, &found);
 }
 
 struct trie*
@@ -102,13 +108,17 @@ trie_delete_dfs(struct trie* root, struct trie* parent, char* value, int* found)
         free(node->value);
         free(node);
     }
+    node->value = NULL;
     return root;
 }
 
-void trie_print(struct trie* root, int level){
+void trie_print(struct trie* root, int level)
+{
     struct trie* node = root;
-    if (root){
-        trie_print(node->child, level++);
-        printf();
+    if (root && root->ch != '\0') {
+        printf("%c(%d)", node->ch, level);
+        trie_print(node->child, level + 1);
+        printf("\n");
+        trie_print(node->sibling, level);
     }
 }

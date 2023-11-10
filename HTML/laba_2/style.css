@@ -81,14 +81,56 @@
     animation: anim 2s infinite linear;
 }
 
+.artilec__grid {
+    display: grid;
+}
+
+.artilec__flex {
+    display: flex;
+    margin-top: 5%;
+}
+
 .image {
-
+    text-align: center;
+    width: auto;
+    height: auto;
 }
 
-.image__switching {
-
+.image__big {
+    width: 80%;
+    height: 70%;
 }
 
-.image__big{
-    
+.artilec__name {
+    font-size: x-large;
+    text-align: left;
+    padding-left: 5%;
+}
+
+.artilec__text {
+    font-size: large;
+    text-align: left;
+    padding-left: 5%;
+}
+
+.artilec__name1 {
+    font-size: xx-large;
+}
+
+.artilec__text1 {
+    font-size: large;
+}
+
+.artilec {
+    width: 100%;
+    height: 70%;
+}
+
+.text_h{
+    font-size: 300%;
+}
+
+.text{
+    font-size: x-large;
+    color: rgb(161, 163, 163);
 }

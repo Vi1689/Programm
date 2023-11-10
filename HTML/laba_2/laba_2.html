@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="style.css">
 
 <body>
+
     <div class="header">
         <div class="header__logoname">
             <img class="header__logo" src="images/frankdenney91407.jpg">
@@ -11,6 +12,7 @@
             </div>
         </div>
     </div>
+
     <div class="about">
         <div class="container">
             <h1 class="about__logo">
@@ -33,6 +35,7 @@
             </h1>
         </div>
     </div>
+
     <div class="container">
         <p class="about__text">
             Если же вы всё-таки зашли в доту один(а), то нужно понимать что новичков там очень не любят.
@@ -41,9 +44,19 @@
             задания из одного разряда можно получить внутриигровые предметы.
         </p>
     </div>
+
     <div class="image">
-        <img id="image" src="images/ob1.png" onClick="imgsrc();">
+        <div class="image_flex">
+            <button class="image__button" onclick="img2()"><</button>
+            <img id="image" src="images/ob1.png" onClick="imgsrc();">
+            <button class="image__button" onclick="img1()">></button>
+        </div>
+        <button class="image__button" onclick="img3(0)">1</button>
+        <button class="image__button" onclick="img3(1)">2</button>
+        <button class="image__button" onclick="img3(2)">3</button>
+        <button class="image__button" onclick="img3(3)">4</button>
     </div>
+
     <div class="container">
         <p class="about__text">
             После прохождения обучения нужно выбрать героя на котором играть. Можно читать что делает каждая
@@ -53,6 +66,7 @@
             (Главное никому не говорить и не писать в чат, что играете первый или второй раз)
         </p>
     </div>
+
     <div class="image">
         <img class="image__big" src="images/ob5.png">
     </div>
@@ -109,17 +123,23 @@
     <div class="image">
         <img class="image__big" src="images/ob12.png">
     </div>
-    <script src="laba_2.Js"></script>
 
-
-    <div class="container">
-        <h1 class="text_h">Связь с создателем</h1>
-        <div class="artilec__grid">
-            <p class="text">Discord - baranov2008</p>
-            <p class="text">Steam - Supernatural</p>
-            <p class="text">Dota 2 - 170542547</p>
+    <div class="end">
+        <div class="container">
+            <h1 class="end__text">Связь с создателем</h1>
+            <div class="end__grid">
+                <p class="text">Discord - baranov2008</p>
+                <p class="text">Steam - Supernatural</p>
+                <p class="text">Dota 2 - 170542547</p>
+            </div>
+            <div class="image">
+                <a href="https://discord.com/"><img src="images/ob14.png"></a>
+                <a href="https://store.steampowered.com/"><img src="images/ob15.png" style="padding-bottom: 3%;"></a>
+            </div>
         </div>
     </div>
+
+    <script src="laba_2.Js"></script>
 </body>
 
 </html>

@@ -126,11 +126,28 @@
     height: 70%;
 }
 
-.text_h{
+.end__text {
     font-size: 300%;
 }
 
-.text{
+.text {
     font-size: x-large;
     color: rgb(161, 163, 163);
+}
+
+.end {
+    width: auto;
+    height: auto;
+}
+
+.image__button {
+    margin: auto;
+    border-radius: 100%;
+    background-color: rgb(224, 223, 223);
+    width: 50px;
+    height: 50px;
+}
+
+.image_flex {
+    display: flex;
 }

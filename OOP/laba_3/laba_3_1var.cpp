@@ -1,5 +1,7 @@
 #include <SFML/Graphics.hpp>
 
+//g++ laba_3_1var.cpp -o main -lsfml-graphics -lsfml-window -lsfml-system
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");

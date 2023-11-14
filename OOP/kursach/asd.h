@@ -42,10 +42,21 @@ class Apple : public entity {
 private:
     node position;
     sf::CircleShape apple;
+    int count;
+    int arr[8];
 
 public:
     Apple() : entity(), apple(capacity / 2)
     {
+        this->count = 0;
+        arr[0] = 500;
+        arr[1] = 500;
+        arr[2] = 850;
+        arr[3] = 150;
+        arr[4] = 450;
+        arr[5] = 650;
+        arr[6] = 300;
+        arr[7] = 550;
         position.x = 0;
         position.y = 0;
         apple.setFillColor(sf::Color::Red);
@@ -54,6 +65,15 @@ public:
 
     Apple(int capacity) : entity(capacity), apple(capacity / 2)
     {
+        this->count = 0;
+        arr[0] = 500;
+        arr[1] = 500;
+        arr[2] = 850;
+        arr[3] = 150;
+        arr[4] = 450;
+        arr[5] = 650;
+        arr[6] = 300;
+        arr[7] = 550;
         position.x = 0;
         position.y = 0;
         apple.setFillColor(sf::Color::Red);
@@ -72,8 +92,12 @@ public:
 
     virtual void movement(int expression)
     {
-        position.x = 500;
-        position.y = 350;
+        position.x = arr[count];
+        position.y = arr[count + 1];
+        count += 2;
+        if (count > 7) {
+            count = 0;
+        }
         apple.setPosition(sf::Vector2f(position.x, position.y));
     }
 };

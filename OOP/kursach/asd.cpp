@@ -142,7 +142,7 @@ void Setting(int* size, int* capacity)
                     break;
                 case sf::Keyboard::Enter:
                     if (menu.getColor(0) == 'g') {
-                        Menu menu_size("2", "4", "Back");
+                        Menu menu_size("2", "4", "6");
                         window.clear();
                         window.draw(menu_size);
                         window.display();
@@ -174,10 +174,17 @@ void Setting(int* size, int* capacity)
                                                 menu_size.getColor(1) == 'g') {
                                             (*size) = 4;
                                             break;
+                                        } else if (
+                                                menu_size.getColor(2) == 'g') {
+                                            (*size) = 6;
+                                            break;
                                         } else {
                                             flag = true;
                                             break;
                                         }
+                                    case sf::Keyboard::Escape:
+                                        flag = true;
+                                        break;
                                     }
                                 }
                             }
@@ -191,7 +198,7 @@ void Setting(int* size, int* capacity)
                         window.display();
                         break;
                     } else if (menu.getColor(1) == 'g') {
-                        Menu menu_capacity("50", "25", "Back");
+                        Menu menu_capacity("50", "25", "10");
                         window.clear();
                         window.draw(menu_capacity);
                         window.display();
@@ -224,10 +231,18 @@ void Setting(int* size, int* capacity)
                                                 == 'g') {
                                             (*capacity) = 25;
                                             break;
+                                        } else if (
+                                                menu_capacity.getColor(2)
+                                                == 'g') {
+                                            (*capacity) = 10;
+                                            break;
                                         } else {
                                             flag = true;
                                             break;
                                         }
+                                    case sf::Keyboard::Escape:
+                                        flag = true;
+                                        break;
                                     }
                                 }
                             }

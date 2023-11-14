@@ -1,31 +1,38 @@
 #include <SFML/Graphics.hpp>
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <string>
-#include <time.h>
+#include <thread>
 
 struct node {
     float x, y;
 };
 
-/*class node {
+class entity : sf::Drawable {
 protected:
-    float x, y;
-    node()
-    {
-        this->x = rand() % 1000;
-        this->y = rand() % 750;
-    }
-};
-*/
+    int size;
 
-class snake {
+public:
+    virtual void movement() = 0;
+};
+
+class apple : public entity {
+private:
+    node position;
+
+public:
+    
+};
+
+class snake : public entity {
 private:
     node count[10];
     float volume;
-    int size;
+    sf::CircleShape head;
+    sf::RectangleShape rectangle[9];
 
-    void check(int i)
+    void transition(int i)
     {
         if (count[i].x >= 1000) {
             count[i].x = 0;
@@ -41,61 +48,144 @@ private:
         }
     }
 
-public:
-    snake()
+    bool check(int temp, int expression)
     {
-        this->size = 4;
-        count[0].x = 750;
-        count[0].y = 375;
+        switch (expression) {
+        case 1:
+        case 2:
+            for (int i = 0; i < size; ++i) {
+                if ((temp == count[i].x || temp >= 1000 && 0 == count[i].x
+                     || temp < 0 && (1000 - volume) == count[i].x)
+                    && count[0].y == count[i].y) {
+                    return true;
+                }
+            }
+            return false;
+            break;
+        case 3:
+        case 4:
+            for (int i = 0; i < size; ++i) {
+                if ((temp == count[i].y || temp >= 750 && 0 == count[i].y
+                     || temp < 0 && (750 - volume) == count[i].y)
+                    && count[0].x == count[i].x) {
+                    return true;
+                }
+            }
+            return false;
+            break;
+        }
+        return false;
+    }
+
+public:
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
+    {
+        target.draw(head);
+        for (int i = 0; i <= 8; ++i) {
+            target.draw(rectangle[i]);
+        }
+    }
+
+    void update()
+    {
+        head.setPosition(sf::Vector2f(count[0].x, count[0].y));
+        for (int i = 1; i < size - 1; ++i) {
+            rectangle[i].setPosition(
+                    sf::Vector2f(count[i - 1].x, count[i - 1].y));
+        }
+    }
+
+    snake() : volume(50), head(volume / 2)
+    {
+        this->size = 10;
+        count[0].x = 500;
+        count[0].y = 350;
         this->volume = 50;
         for (int i = 1; i < size; ++i) {
             count[i].x = count[i - 1].x - volume;
             count[i].y = count[i - 1].y;
         }
+
+        head.setPosition(sf::Vector2f(count[0].x, count[0].y));
+
+        for (int i = 0; i < size - 1; ++i) {
+            rectangle[i] = sf::RectangleShape(
+                    sf::Vector2f(count[i + 1].x, count[i + 1].y));
+            rectangle[i].setSize(sf::Vector2f(volume, volume));
+            rectangle[i].setPosition(count[i + 1].x, count[i + 1].y);
+        }
+
+        for (int i = size - 1; i < 9; ++i) {
+            rectangle[i] = sf::RectangleShape(
+                    sf::Vector2f(count[i + 1].x, count[i + 1].y));
+            rectangle[i].setSize(sf::Vector2f(volume, volume));
+            rectangle[i].setPosition(count[i + 1].x, count[i + 1].y);
+            // rectangle[i].setFillColor(sf::Color::Black);
+        }
     }
 
-    void movement(int expression)
+    bool movement(int expression)
     {
+        int temp;
         switch (expression) {
         case (1):
+            temp = count[0].x + volume;
+            if (check(temp, 1)) {
+                return true;
+                break;
+            }
             for (int i = size - 1; i > 0; --i) {
                 count[i].x = count[i - 1].x;
                 count[i].y = count[i - 1].y;
-                check(i);
+                transition(i);
             }
             count[0].x += volume;
-            check(0);
+            transition(0);
             break;
         case (2):
+            temp = count[0].x - volume;
+            if (check(temp, 2)) {
+                return true;
+                break;
+            }
             for (int i = size - 1; i > 0; --i) {
                 count[i].x = count[i - 1].x;
                 count[i].y = count[i - 1].y;
-                check(i);
+                transition(i);
             }
             count[0].x -= volume;
-            check(0);
+            transition(0);
             break;
         case (3):
+            temp = count[0].y + volume;
+            if (check(temp, 3)) {
+                return true;
+                break;
+            }
             for (int i = size - 1; i > 0; --i) {
                 count[i].y = count[i - 1].y;
                 count[i].x = count[i - 1].x;
-                check(i);
+                transition(i);
             }
             count[0].y += volume;
-            check(0);
+            transition(0);
             break;
         case (4):
+            temp = count[0].y - volume;
+            if (check(temp, 4)) {
+                return true;
+                break;
+            }
             for (int i = size - 1; i > 0; --i) {
                 count[i].y = count[i - 1].y;
                 count[i].x = count[i - 1].x;
-                check(i);
+                transition(i);
             }
             count[0].y -= volume;
-            check(0);
-            break;
-        default:
+            transition(0);
             break;
         }
+        return false;
     }
 
     void setX(float _x)
@@ -139,6 +229,7 @@ private:
     sf::Text play;
     sf::Text settings;
     sf::Text exit;
+    sf::Text dead;
     sf::Font font;
     char color[3] = {'g', 'r', 'r'};
 
@@ -155,13 +246,19 @@ public:
         settings.setString("Settings");
         settings.setCharacterSize(100);
         settings.setFillColor(sf::Color::Red);
-        settings.setPosition(400, 200);
+        settings.setPosition(300, 200);
 
         exit.setFont(font);
         exit.setString("Exit");
         exit.setCharacterSize(100);
         exit.setFillColor(sf::Color::Red);
         exit.setPosition(400, 300);
+
+        dead.setFont(font);
+        dead.setString("You dead");
+        dead.setCharacterSize(100);
+        dead.setFillColor(sf::Color::White);
+        dead.setPosition(250, 300);
 
         if (!font.loadFromFile("ArialBlack.ttf")) {
             throw "No font";
@@ -186,6 +283,11 @@ public:
     sf::Text getExit()
     {
         return exit;
+    }
+
+    sf::Text getDead()
+    {
+        return dead;
     }
 
     void Down()
@@ -258,9 +360,5 @@ public:
         color[0] = 'g';
         color[1] = 'r';
         color[2] = 'r';
-    }
-
-    void Enter()
-    {
     }
 };

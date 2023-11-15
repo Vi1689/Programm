@@ -229,6 +229,13 @@ public:
             if ((temp == count[1].y || temp >= 750 && 0 == count[1].y
                  || temp < 0 && (750 - capacity) == count[1].y)
                 && count[0].x == count[1].x) {
+                for (int i = size - 1; i > 0; --i) {
+                    count[i].x = count[i - 1].x;
+                    count[i].y = count[i - 1].y;
+                    transition(i);
+                }
+                count[0].y += capacity;
+                transition(0);
                 break;
             }
             for (int i = size - 1; i > 0; --i) {
@@ -244,6 +251,13 @@ public:
             if ((temp == count[1].y || temp >= 750 && 0 == count[1].y
                  || temp < 0 && (750 - capacity) == count[1].y)
                 && count[0].x == count[1].x) {
+                for (int i = size - 1; i > 0; --i) {
+                    count[i].x = count[i - 1].x;
+                    count[i].y = count[i - 1].y;
+                    transition(i);
+                }
+                count[0].y -= capacity;
+                transition(0);
                 break;
             }
             for (int i = size - 1; i > 0; --i) {
@@ -259,6 +273,13 @@ public:
             if ((temp == count[1].x || temp >= 1000 && 0 == count[1].x
                  || temp < 0 && (1000 - capacity) == count[1].x)
                 && count[0].y == count[1].y) {
+                for (int i = size - 1; i > 0; --i) {
+                    count[i].x = count[i - 1].x;
+                    count[i].y = count[i - 1].y;
+                    transition(i);
+                }
+                count[0].x -= capacity;
+                transition(0);
                 break;
             }
             for (int i = size - 1; i > 0; --i) {
@@ -274,6 +295,13 @@ public:
             if ((temp == count[1].x || temp >= 1000 && 0 == count[1].x
                  || temp < 0 && (1000 - capacity) == count[1].x)
                 && count[0].y == count[1].y) {
+                for (int i = size - 1; i > 0; --i) {
+                    count[i].x = count[i - 1].x;
+                    count[i].y = count[i - 1].y;
+                    transition(i);
+                }
+                count[0].x += capacity;
+                transition(0);
                 break;
             }
             for (int i = size - 1; i > 0; --i) {

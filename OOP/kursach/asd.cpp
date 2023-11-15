@@ -33,7 +33,7 @@ void Play(int size, int capacity, int speed)
                 case sf::Keyboard::Escape:
                     window.close();
                     break;
-                case sf::Keyboard::W:
+                case sf::Keyboard::Up:
                     if (s.check(1)) {
                         window.clear();
                         window.draw(died);
@@ -52,7 +52,7 @@ void Play(int size, int capacity, int speed)
                     window.display();
                     */
                     break;
-                case sf::Keyboard::S:
+                case sf::Keyboard::Down:
                     if (s.check(2)) {
                         window.clear();
                         window.draw(died);
@@ -71,7 +71,7 @@ void Play(int size, int capacity, int speed)
                     window.display();
                     */
                     break;
-                case sf::Keyboard::D:
+                case sf::Keyboard::Right:
                     if (s.check(3)) {
                         window.clear();
                         window.draw(died);
@@ -90,7 +90,7 @@ void Play(int size, int capacity, int speed)
                     window.display();
                     */
                     break;
-                case sf::Keyboard::A:
+                case sf::Keyboard::Left:
                     if (s.check(4)) {
                         window.clear();
                         window.draw(died);
@@ -114,7 +114,7 @@ void Play(int size, int capacity, int speed)
             apple_node = apple.getNode();
             s_node = s.getNode();
             if (apple_node.x == s_node.x && apple_node.y == s_node.y) {
-                s.AddCapacity();
+                s.AddSize();
                 apple.movement();
             }
         }
@@ -134,7 +134,7 @@ void Play(int size, int capacity, int speed)
         apple_node = apple.getNode();
         s_node = s.getNode();
         if (apple_node.x == s_node.x && apple_node.y == s_node.y) {
-            s.AddCapacity();
+            s.AddSize();
             apple.movement();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(speed));

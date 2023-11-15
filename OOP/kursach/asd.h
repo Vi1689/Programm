@@ -205,7 +205,7 @@ public:
         }
     }
 
-    void AddCapacity()
+    void AddSize()
     {
         size++;
         node b;

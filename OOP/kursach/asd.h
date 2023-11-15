@@ -98,7 +98,7 @@ public:
         return position;
     }
 
-    virtual void movement(int expression)
+    virtual void movement(int expression = 0)
     {
         position.x = arr[count];
         position.y = arr[count + 1];
@@ -361,8 +361,6 @@ class Menu : public sf::Drawable {
 private:
     int size;
     std::vector<sf::Text> arr;
-    // sf::Text arr[3];
-    // char color[3] = {'g', 'r', 'r'};
     std::vector<char> color;
     sf::Font font;
 
@@ -445,7 +443,7 @@ public:
         }
     }
 
-    char getColor(int i)
+    char getColor(int i = 0)
     {
         return color[i];
     }

@@ -45,8 +45,8 @@ void Play(int size, int capacity)
                     s.movement(1);
                     s.update();
                     window.clear();
-                    window.draw(s);
                     window.draw(apple);
+                    window.draw(s);
                     window.display();
                     break;
                 case sf::Keyboard::S:
@@ -61,8 +61,8 @@ void Play(int size, int capacity)
                     s.movement(2);
                     s.update();
                     window.clear();
-                    window.draw(s);
                     window.draw(apple);
+                    window.draw(s);
                     window.display();
                     break;
                 case sf::Keyboard::D:
@@ -77,8 +77,8 @@ void Play(int size, int capacity)
                     s.movement(3);
                     s.update();
                     window.clear();
-                    window.draw(s);
                     window.draw(apple);
+                    window.draw(s);
                     window.display();
                     break;
                 case sf::Keyboard::A:
@@ -93,8 +93,8 @@ void Play(int size, int capacity)
                     s.movement(4);
                     s.update();
                     window.clear();
-                    window.draw(s);
                     window.draw(apple);
+                    window.draw(s);
                     window.display();
                     break;
                 }
@@ -103,7 +103,7 @@ void Play(int size, int capacity)
             s_node = s.getNode();
             if (apple_node.x == s_node.x && apple_node.y == s_node.y) {
                 s.AddCapacity();
-                apple.movement(2);
+                apple.movement();
             }
         }
     }
@@ -147,7 +147,7 @@ void Setting(int* size, int* capacity)
                     window.display();
                     break;
                 case sf::Keyboard::Enter:
-                    if (menu.getColor(0) == 'g') {
+                    if (menu.getColor() == 'g') {
                         std::vector<std::string> str;
                         str.push_back("2");
                         str.push_back("4");
@@ -178,7 +178,7 @@ void Setting(int* size, int* capacity)
                                         window.display();
                                         break;
                                     case sf::Keyboard::Enter:
-                                        if (menu_size.getColor(0) == 'g') {
+                                        if (menu_size.getColor() == 'g') {
                                             (*size) = 2;
                                             break;
                                         } else if (
@@ -239,7 +239,7 @@ void Setting(int* size, int* capacity)
                                         window.display();
                                         break;
                                     case sf::Keyboard::Enter:
-                                        if (menu_capacity.getColor(0) == 'g') {
+                                        if (menu_capacity.getColor() == 'g') {
                                             (*capacity) = 50;
                                             break;
                                         } else if (
@@ -320,7 +320,7 @@ int main()
                         window.display();
                         break;
                     case sf::Keyboard::Enter:
-                        if (menu.getColor(0) == 'g') {
+                        if (menu.getColor() == 'g') {
                             Play(size, capacity);
                             break;
                         } else if (menu.getColor(1) == 'g') {

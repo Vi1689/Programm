@@ -112,7 +112,13 @@ void Play(int size, int capacity)
 void Setting(int* size, int* capacity)
 {
     sf::RenderWindow window(sf::VideoMode(1000, 750), "Setting");
-    Menu menu("Size", "Capacity", "Back");
+
+    std::vector<std::string> str;
+    str.push_back("Size");
+    str.push_back("Capacity");
+    str.push_back("Back");
+
+    Menu menu(str);
 
     window.clear();
     window.draw(menu);
@@ -142,7 +148,12 @@ void Setting(int* size, int* capacity)
                     break;
                 case sf::Keyboard::Enter:
                     if (menu.getColor(0) == 'g') {
-                        Menu menu_size("2", "4", "6");
+                        std::vector<std::string> str;
+                        str.push_back("2");
+                        str.push_back("4");
+                        str.push_back("6");
+                        str.push_back("Back");
+                        Menu menu_size(str);
                         window.clear();
                         window.draw(menu_size);
                         window.display();
@@ -198,7 +209,12 @@ void Setting(int* size, int* capacity)
                         window.display();
                         break;
                     } else if (menu.getColor(1) == 'g') {
-                        Menu menu_capacity("50", "25", "10");
+                        std::vector<std::string> str;
+                        str.push_back("50");
+                        str.push_back("25");
+                        str.push_back("10");
+                        str.push_back("Back");
+                        Menu menu_capacity(str);
                         window.clear();
                         window.draw(menu_capacity);
                         window.display();
@@ -270,7 +286,12 @@ int main()
     try {
         sf::RenderWindow window(sf::VideoMode(1000, 750), "Snake");
 
-        Menu menu("Play", "Setting", "Exit");
+        std::vector<std::string> str;
+        str.push_back("Play");
+        str.push_back("Setting");
+        str.push_back("Exit");
+
+        Menu menu(str);
 
         window.clear();
         window.draw(menu);

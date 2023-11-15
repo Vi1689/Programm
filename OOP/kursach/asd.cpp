@@ -1,13 +1,13 @@
 #include "asd.h"
 
-void Play(int size, int capacity)
+void Play(int size, int capacity, int speed)
 {
     srand(time(NULL));
     sf::RenderWindow window(sf::VideoMode(1000, 750), "Play");
 
     Apple apple(capacity);
     snake s(size, capacity);
-
+    int t = 0;
     sf::Font font;
     if (!font.loadFromFile("ArialBlack.ttf")) {
         throw "No font";
@@ -42,12 +42,15 @@ void Play(int size, int capacity)
                                 std::chrono::milliseconds(1000));
                         window.close();
                     }
+                    t = 1;
+                    /*
                     s.movement(1);
                     s.update();
                     window.clear();
                     window.draw(apple);
                     window.draw(s);
                     window.display();
+                    */
                     break;
                 case sf::Keyboard::S:
                     if (s.check(2)) {
@@ -58,12 +61,15 @@ void Play(int size, int capacity)
                                 std::chrono::milliseconds(1000));
                         window.close();
                     }
+                    t = 2;
+                    /*
                     s.movement(2);
                     s.update();
                     window.clear();
                     window.draw(apple);
                     window.draw(s);
                     window.display();
+                    */
                     break;
                 case sf::Keyboard::D:
                     if (s.check(3)) {
@@ -74,12 +80,15 @@ void Play(int size, int capacity)
                                 std::chrono::milliseconds(1000));
                         window.close();
                     }
+                    t = 3;
+                    /*
                     s.movement(3);
                     s.update();
                     window.clear();
                     window.draw(apple);
                     window.draw(s);
                     window.display();
+                    */
                     break;
                 case sf::Keyboard::A:
                     if (s.check(4)) {
@@ -90,12 +99,15 @@ void Play(int size, int capacity)
                                 std::chrono::milliseconds(1000));
                         window.close();
                     }
+                    t = 4;
+                    /*
                     s.movement(4);
                     s.update();
                     window.clear();
                     window.draw(apple);
                     window.draw(s);
                     window.display();
+                    */
                     break;
                 }
             }
@@ -106,16 +118,37 @@ void Play(int size, int capacity)
                 apple.movement();
             }
         }
+        if (s.check(t)) {
+            window.clear();
+            window.draw(died);
+            window.display();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            window.close();
+        }
+        s.movement(t);
+        s.update();
+        window.clear();
+        window.draw(apple);
+        window.draw(s);
+        window.display();
+        apple_node = apple.getNode();
+        s_node = s.getNode();
+        if (apple_node.x == s_node.x && apple_node.y == s_node.y) {
+            s.AddCapacity();
+            apple.movement();
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(speed));
     }
 }
 
-void Setting(int* size, int* capacity)
+void Setting(int* size, int* capacity, int* speed)
 {
     sf::RenderWindow window(sf::VideoMode(1000, 750), "Setting");
 
     std::vector<std::string> str;
     str.push_back("Size");
     str.push_back("Capacity");
+    str.push_back("Speed");
     str.push_back("Back");
 
     Menu menu(str);
@@ -271,6 +304,72 @@ void Setting(int* size, int* capacity)
                         window.draw(menu);
                         window.display();
                         break;
+                    } else if (menu.getColor(2) == 'g') {
+                        std::vector<std::string> str;
+                        str.push_back("500");
+                        str.push_back("250");
+                        str.push_back("100");
+                        str.push_back("50");
+                        str.push_back("Back");
+                        Menu menu_speed(str);
+                        window.clear();
+                        window.draw(menu_speed);
+                        window.display();
+                        while (window.isOpen()) {
+                            sf::Event event;
+                            while (window.pollEvent(event)) {
+                                if (event.type == sf::Event::Closed) {
+                                    window.close();
+                                }
+                                if (event.type == sf::Event::KeyPressed) {
+                                    switch (event.key.code) {
+                                    case sf::Keyboard::Down:
+                                        menu_speed.Down();
+                                        window.clear();
+                                        window.draw(menu_speed);
+                                        window.display();
+                                        break;
+                                    case sf::Keyboard::Up:
+                                        menu_speed.Up();
+                                        window.clear();
+                                        window.draw(menu_speed);
+                                        window.display();
+                                        break;
+                                    case sf::Keyboard::Enter:
+                                        if (menu_speed.getColor() == 'g') {
+                                            (*speed) = 500;
+                                            break;
+                                        } else if (
+                                                menu_speed.getColor(1) == 'g') {
+                                            (*speed) = 250;
+                                            break;
+                                        } else if (
+                                                menu_speed.getColor(2) == 'g') {
+                                            (*speed) = 100;
+                                            break;
+                                        } else if (
+                                                menu_speed.getColor(3) == 'g') {
+                                            (*speed) = 50;
+                                            break;
+                                        } else {
+                                            flag = true;
+                                            break;
+                                        }
+                                    case sf::Keyboard::Escape:
+                                        flag = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (flag) {
+                                flag = false;
+                                break;
+                            }
+                        }
+                        window.clear();
+                        window.draw(menu);
+                        window.display();
+                        break;
                     } else {
                         window.close();
                         break;
@@ -297,7 +396,7 @@ int main()
         window.draw(menu);
         window.display();
 
-        int size = 2, capacity = 50;
+        int size = 2, capacity = 50, speed = 100;
 
         while (window.isOpen()) {
             sf::Event event;
@@ -321,10 +420,10 @@ int main()
                         break;
                     case sf::Keyboard::Enter:
                         if (menu.getColor() == 'g') {
-                            Play(size, capacity);
+                            Play(size, capacity, speed);
                             break;
                         } else if (menu.getColor(1) == 'g') {
-                            Setting(&size, &capacity);
+                            Setting(&size, &capacity, &speed);
                             break;
                         } else {
                             window.close();

@@ -42,13 +42,11 @@ class Apple : public entity {
 private:
     node position;
     sf::CircleShape apple;
-    int count;
-    int arr[8];
+    static inline unsigned count;
+    int arr[12];
 
-public:
-    Apple() : entity(), apple(capacity / 2)
+    void completion()
     {
-        this->count = 0;
         arr[0] = 500;
         arr[1] = 500;
         arr[2] = 850;
@@ -57,25 +55,35 @@ public:
         arr[5] = 650;
         arr[6] = 300;
         arr[7] = 550;
-        position.x = 0;
-        position.y = 0;
+        arr[8] = 150;
+        arr[9] = 650;
+        arr[10] = 150;
+        arr[11] = 50;
+    }
+
+public:
+    Apple() : entity(), apple(capacity / 2)
+    {
+        completion();
+        position.x = arr[count];
+        position.y = arr[count + 1];
+        count += 2;
+        if (count > 11) {
+            count = 0;
+        }
         apple.setFillColor(sf::Color::Red);
         apple.setPosition(sf::Vector2f(position.x, position.y));
     }
 
     Apple(int capacity) : entity(capacity), apple(capacity / 2)
     {
-        this->count = 0;
-        arr[0] = 500;
-        arr[1] = 500;
-        arr[2] = 850;
-        arr[3] = 150;
-        arr[4] = 450;
-        arr[5] = 650;
-        arr[6] = 300;
-        arr[7] = 550;
-        position.x = 0;
-        position.y = 0;
+        completion();
+        position.x = arr[count];
+        position.y = arr[count + 1];
+        count += 2;
+        if (count > 11) {
+            count = 0;
+        }
         apple.setFillColor(sf::Color::Red);
         apple.setPosition(sf::Vector2f(position.x, position.y));
     }
@@ -95,7 +103,7 @@ public:
         position.x = arr[count];
         position.y = arr[count + 1];
         count += 2;
-        if (count > 7) {
+        if (count > 11) {
             count = 0;
         }
         apple.setPosition(sf::Vector2f(position.x, position.y));
@@ -351,8 +359,11 @@ public:
 
 class Menu : public sf::Drawable {
 private:
-    sf::Text arr[3];
-    char color[3] = {'g', 'r', 'r'};
+    int size;
+    std::vector<sf::Text> arr;
+    // sf::Text arr[3];
+    // char color[3] = {'g', 'r', 'r'};
+    std::vector<char> color;
     sf::Font font;
 
     void inittext(sf::Text& arr, sf::String s, char color, int x, int y)
@@ -369,32 +380,40 @@ private:
     }
 
 public:
-    Menu(std::string s1, std::string s2, std::string s3)
+    Menu(std::vector<std::string> s)
     {
         if (!font.loadFromFile("ArialBlack.ttf")) {
             throw "No font";
         }
-        inittext(arr[0], s1, 'g', 300, 100);
-        inittext(arr[1], s2, 'r', 300, 200);
-        inittext(arr[2], s3, 'r', 300, 300);
+        this->size = s.size();
+        color.push_back('g');
+        for (int i = 1; i < size; ++i) {
+            color.push_back('r');
+        }
+        for (int i = 0, k = 100; i < size; ++i) {
+            sf::Text a;
+            arr.push_back(a);
+            inittext(arr[i], s[i], color[i], 300, k);
+            k += 100;
+        }
     }
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < size; ++i) {
             target.draw(arr[i]);
         }
     }
 
     void Up()
     {
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < size; ++i) {
             if (color[i] == 'g') {
                 if (!i) {
                     arr[i].setFillColor(sf::Color::Red);
-                    arr[2].setFillColor(sf::Color::Green);
+                    arr[size - 1].setFillColor(sf::Color::Green);
                     color[i] = 'r';
-                    color[2] = 'g';
+                    color[size - 1] = 'g';
                     break;
                 }
                 arr[i].setFillColor(sf::Color::Red);
@@ -408,9 +427,9 @@ public:
 
     void Down()
     {
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < size; ++i) {
             if (color[i] == 'g') {
-                if (i == 2) {
+                if (i == size - 1) {
                     arr[i].setFillColor(sf::Color::Red);
                     arr[0].setFillColor(sf::Color::Green);
                     color[i] = 'r';

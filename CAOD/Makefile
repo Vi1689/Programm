@@ -1,25 +1,25 @@
 APP_NAME = main
-LIB_STATIC = laba_2
-LIB_DYNAMIC = trie_tree
+LIB_STATIC = laba_3
+LIB_DYNAMIC = fibheap
 
 
 all: $(LIB_STATIC)/$(LIB_STATIC).o gdb $(LIB_STATIC)/$(LIB_DYNAMIC).o
-	gcc $(LIB_STATIC)/$(LIB_STATIC).o  $(LIB_STATIC)/$(LIB_DYNAMIC).o -o $(LIB_STATIC)/$(APP_NAME)
+	gcc $(LIB_STATIC)/$(LIB_STATIC).o  $(LIB_STATIC)/$(LIB_DYNAMIC).o -o $(LIB_STATIC)/$(APP_NAME) -lm
 
 run:
 	./$(LIB_STATIC)/$(APP_NAME)
 
 $(LIB_STATIC)/$(LIB_STATIC).o: $(LIB_STATIC)/$(LIB_STATIC).c
-	gcc -c $(LIB_STATIC)/$(LIB_STATIC).c -o $(LIB_STATIC)/$(LIB_STATIC).o
+	gcc -c $(LIB_STATIC)/$(LIB_STATIC).c -o $(LIB_STATIC)/$(LIB_STATIC).o -lm
 
 $(LIB_STATIC)/$(LIB_DYNAMIC).o: $(LIB_STATIC)/$(LIB_DYNAMIC).c
-	gcc -c $(LIB_STATIC)/$(LIB_DYNAMIC).c -o $(LIB_STATIC)/$(LIB_DYNAMIC).o
+	gcc -c $(LIB_STATIC)/$(LIB_DYNAMIC).c -o $(LIB_STATIC)/$(LIB_DYNAMIC).o -lm
 
 clean: 
 	rm $(LIB_STATIC)/$(APP_NAME) $(LIB_STATIC)/$(LIB_STATIC).o $(APP_NAME) $(LIB_STATIC)/$(LIB_DYNAMIC).o
 
 gdb:
-	gcc -g $(LIB_STATIC)/$(LIB_STATIC).c $(LIB_STATIC)/$(LIB_DYNAMIC).c -o $(APP_NAME)
+	gcc -g $(LIB_STATIC)/$(LIB_STATIC).c $(LIB_STATIC)/$(LIB_DYNAMIC).c -o $(APP_NAME) -lm
 
 gdb_run:
 	gdb main

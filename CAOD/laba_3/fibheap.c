@@ -1,8 +1,19 @@
 #include "fibheap.h"
+#include <math.h>
+
+struct fibheap* createHeap()
+{
+    struct fibheap* heap = malloc(sizeof(struct fibheap));
+
+    heap->min = NULL;
+    heap->nnodes = 0;
+
+    return heap;
+}
 
 struct fibheap* fibheap_insert(struct fibheap* heap, int key, char* value)
 {
-    struct fibheap* node = malloc(sizeof(*node));
+    struct node* node = malloc(sizeof(*node));
     node->key = key;
     node->value = value;
     node->degree = 0;
@@ -11,8 +22,6 @@ struct fibheap* fibheap_insert(struct fibheap* heap, int key, char* value)
     node->child = NULL;
     node->left = node;
     node->right = node;
-    node->nnodes = heap->nnodes + 1;
-    node->min = heap;
     /* Добавляем узел в список корней heap */
     FibHeapAddNodeToRootList(node, heap->min);
     if (heap->min == NULL || node->key < heap->min->key) {
@@ -22,10 +31,10 @@ struct fibheap* fibheap_insert(struct fibheap* heap, int key, char* value)
     return heap;
 }
 
-void FibHeapAddNodeToRootList(struct fibheap* node, struct fibheap* h)
+void FibHeapAddNodeToRootList(struct node* node, struct node* h)
 {
     if (h == NULL) {
-        return NULL;
+        return;
     }
     if (h->left == h) { /* Случай 1: список h содержит один корень */
         h->left = node;
@@ -33,7 +42,7 @@ void FibHeapAddNodeToRootList(struct fibheap* node, struct fibheap* h)
         node->right = h;
         node->left = h;
     } else { /* Случай 2: список h содержит более одного корня */
-        struct fibheap* lnode = h->left;
+        struct node* lnode = h->left;
         h->left = node;
         node->right = h;
         node->left = lnode;
@@ -41,10 +50,11 @@ void FibHeapAddNodeToRootList(struct fibheap* node, struct fibheap* h)
     }
 }
 
-struct fibheap* fibheap_min(struct fibheap* heap)
+struct node* fibheap_min(struct fibheap* heap)
 {
     return heap->min;
 }
+
 struct fibheap* fibheap_union(struct fibheap* heap1, struct fibheap* heap2)
 {
     struct fibheap* heap = malloc(sizeof(*heap));
@@ -60,10 +70,10 @@ struct fibheap* fibheap_union(struct fibheap* heap1, struct fibheap* heap2)
     return heap;
 }
 
-struct fibheap* FibHeapLinkLists(struct fibheap* heap1, struct fibheap* heap2)
+struct node* FibHeapLinkLists(struct node* heap1, struct node* heap2)
 {
-    struct fibheap* left1;
-    struct fibheap* left2;
+    struct node* left1;
+    struct node* left2;
     if (heap1 == NULL || heap2 == NULL) {
         return NULL;
     }
@@ -76,17 +86,20 @@ struct fibheap* FibHeapLinkLists(struct fibheap* heap1, struct fibheap* heap2)
     return heap1;
 }
 
-struct fibheap* fibheap_delete_min(struct fibheap* heap)
+struct node* fibheap_delete_min(struct fibheap* heap)
 {
-    struct fibheap* z = heap->min;
+    struct node* z = heap->min;
     if (z == NULL) {
         return NULL;
     }
-    for (struct fibheap* x; x != NULL; x = z->child) {
-        FibHeapAddNodeToRootList(x, heap);
+    for (struct node* x = z->child; x != NULL; x = x->left) {
+        FibHeapAddNodeToRootList(x, heap->min);
         x->parent = NULL;
+        if (x->left == x) {
+            break;
+        }
     }
-    FibHeapRemoveNodeFromRootList(z, heap);
+    FibHeapRemoveNodeFromRootList(z, heap->min);
     if (z == z->right) {
         heap->min = NULL;
     } else {
@@ -94,17 +107,122 @@ struct fibheap* fibheap_delete_min(struct fibheap* heap)
         FibHeapConsolidate(heap);
     }
     heap->nnodes = heap->nnodes - 1;
+    free(heap->min);
     return z;
 }
 
-void FibHeapRemoveNodeFromRootList(struct fibheap* z, struct fibheap* heap){
-    
+void FibHeapConsolidate(struct fibheap* heap)
+{
+    int degree = D(heap);
+    struct node** a = malloc(sizeof(*a) * degree);
+    for (int i = 0; i < degree; ++i) {
+        a[i] = NULL;
+    }
+    for (struct node* w = NULL; w != heap->min; w = w->right) {
+        struct node* x = w;
+        int d = x->degree;
+        while (a[d] != NULL) {
+            struct node* y = a[d];
+            if (x->key > y->key) {
+                fibheapswap(x, y);
+            }
+            fibheaplink(heap, y, x);
+            a[d] = NULL;
+            d++;
+        }
+        a[d] = x;
+    }
+    heap->min = NULL;
+    for (int i = 0; i < degree; ++i) {
+        if (a[i] != NULL) {
+            FibHeapAddNodeToRootList(a[i], heap->min);
+            if (heap->min == NULL || a[i]->key < heap->min->key) {
+                heap->min = a[i];
+            }
+        }
+    }
 }
 
-struct fibheap*
-fibheap_decrease_key(struct fibheap* heap, struct fibheap* node, int newkey);
-struct fibheap* fibheap_delete(struct fibheap* heap, int key)
+void fibheapswap(struct node* x, struct node* y)
+{
+    int key = x->key;
+    char* value = x->value;
+    x->key = y->key;
+    x->value = y->value;
+    y->key = key;
+    y->value = value;
+}
+
+int D(struct fibheap* n)
+{
+    return floor(log(n->nnodes));
+}
+
+void fibheaplink(struct fibheap* heap, struct node* y, struct node* x)
+{
+    x->degree = x->degree + 1;
+    FibHeapRemoveNodeFromRootList(y, heap->min);
+    y->parent = x;
+    FibHeapAddNodeToRootList(y, x->child);
+    y->mark = false;
+}
+
+void FibHeapRemoveNodeFromRootList(struct node* z, struct node* heap)
+{
+    heap->right->left = heap->left;
+    heap->left->right = heap->right;
+}
+
+void fibheap_decrease_key(struct fibheap* heap, struct node* x, int newkey)
+{
+    if (newkey > x->key) {
+        return;
+    }
+    x->key = newkey;
+    struct node* y = x->parent;
+    if (y != NULL && x->key > y->key) {
+        fibheapCut(heap, x, y);
+        fibheapCascadingCut(heap, y);
+    }
+    if (x->key < heap->min->key || heap->min == NULL) {
+        heap->min = x;
+    }
+}
+
+void fibheapCut(struct fibheap* heap, struct node* x, struct node* y)
+{
+    FibHeapRemoveNodeFromRootList(x, y);
+    y->degree = y->degree - 1;
+    FibHeapAddNodeToRootList(x, heap->min);
+    x->parent = NULL;
+    x->mark = false;
+}
+
+void fibheapCascadingCut(struct fibheap* heap, struct node* y)
+{
+    if (y->parent == NULL)
+        return;
+    if (y->mark == false) {
+        y->mark = true;
+    } else {
+        fibheapCut(heap, y, y->parent);
+        fibheapCascadingCut(heap, y->parent);
+    }
+}
+
+void fibheap_delete(struct fibheap* heap, struct node* key)
 {
     fibheap_decrease_key(heap, key, ~(~0U >> 1));
     fibheap_delete_min(heap);
+}
+
+void print(struct fibheap* heap)
+{
+    struct node* node = heap->min->left;
+    printf("%d ", heap->min->key);
+    while (node != heap->min) {
+        printf("%d ", node->key);
+        node = node->left;
+    }
+    printf("\n");
 }

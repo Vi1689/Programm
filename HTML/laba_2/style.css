@@ -1,11 +1,11 @@
 .header {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
 }
 
 .header__logoname {
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 100%;
 }
 
 .header__container {
@@ -49,7 +49,7 @@
     font-size: 300%;
 }
 
-.about__text1{
+.about__text1 {
     color: black;
     font-size: 150%;
 }
@@ -107,6 +107,11 @@
     height: 70%;
 }
 
+.image__small {
+    width: 60%;
+    height: 50%;
+}
+
 .artilec__name {
     font-size: x-large;
     text-align: left;
@@ -158,7 +163,275 @@
     display: flex;
 }
 
-a{
+.image__end {
+    width: 200px;
+    height: 200px;
+}
+
+
+.image__end1 {
+    width: 120px;
+    height: 120px;
+    padding-bottom: 5%;
+}
+
+a {
     text-decoration: none;
     color: black;
+}
+
+@media (max-width: 650px) {
+    .header {
+        width: 105%;
+        height: 105%;
+    }
+
+    .header__logoname {
+        width: auto;
+        height: auto;
+    }
+
+    .header__name {
+        width: auto;
+        height: auto;
+        padding-top: 40%;
+        font-size: 17px;
+        color: white;
+    }
+
+    .header__text {
+        width: auto;
+        height: auto;
+        color: white;
+        font-size: 6px;
+    }
+
+    .header__logo {
+        filter: brightness(40%);
+        position: absolute;
+        width: 99%;
+        height: 99%;
+    }
+
+    .about {
+        width: 100%;
+        height: 70%;
+    }
+
+    .about__logo {
+        font-size: 50%;
+    }
+
+    .about__text {
+        color: black;
+        font-size: 10%;
+        padding-bottom: 10%;
+    }
+
+    .about__text1 {
+        color: black;
+        font-size: 50%;
+    }
+
+    .about__text {
+        color: black;
+        font-size: 10%;
+        padding-bottom: 10%;
+    }
+
+    .about__button {
+        font-size: 4px;
+        border-radius: 25px;
+        background-color: rgb(98, 98, 207);
+        width: 50px;
+        height: 20px;
+    }
+
+    .image__button {
+        font-size: 5px;
+        margin: auto;
+        border-radius: 100%;
+        background-color: rgb(224, 223, 223);
+        width: 20px;
+        height: 20px;
+    }
+
+    .artilec__name {
+        font-size: 10%;
+        text-align: left;
+        padding-left: 5%;
+    }
+
+    .artilec__text {
+        font-size: 10%;
+        text-align: left;
+        padding-left: 5%;
+    }
+
+    .artilec__name1 {
+        font-size: 15%;
+    }
+
+    .artilec__text1 {
+        font-size: 10%;
+    }
+
+    .end__text {
+        font-size: 50%;
+    }
+
+    .text {
+        font-size: 10%;
+        color: rgb(161, 163, 163);
+    }
+
+    .artilec {
+        width: auto;
+        height: auto;
+    }
+
+    .image__end {
+        width: 31px;
+        height: 31px;
+    }
+
+
+    .image__end1 {
+        width: 20px;
+        height: 20px;
+        padding-bottom: 5px;
+    }
+
+
+    .image__artilec {
+        width: 30px;
+        height: 15px;
+    }
+}
+
+@media (min-width: 5000px) {
+    .header {
+        width: 105%;
+        height: 105%;
+    }
+
+    .header__logoname {
+        width: auto;
+        height: auto;
+    }
+
+    .header__name {
+        width: auto;
+        height: auto;
+        padding-top: 40%;
+        font-size: 300px;
+        color: white;
+    }
+
+    .header__text {
+        width: auto;
+        height: auto;
+        color: white;
+        font-size: 130px;
+    }
+
+    .header__logo {
+        filter: brightness(40%);
+        position: absolute;
+        width: 99%;
+        height: 99%;
+    }
+
+    .about {
+        width: 100%;
+        height: 75%;
+    }
+
+    .about__logo {
+        font-size: 200px;
+    }
+
+    .about__text {
+        color: black;
+        font-size: 1500px;
+        padding-bottom: 10%;
+    }
+
+    .about__text1 {
+        color: black;
+        font-size: 180px;
+    }
+
+    .about__text {
+        color: black;
+        font-size: 120px;
+        padding-bottom: 10%;
+    }
+
+    .about__button {
+        font-size: 150px;
+        border-radius: 50%;
+        background-color: rgb(98, 98, 207);
+        width: 1100px;
+        height: 400px;
+    }
+
+    .image__button {
+        font-size: 100px;
+        margin: auto;
+        border-radius: 100%;
+        background-color: rgb(224, 223, 223);
+        width: 250px;
+        height: 250px;
+    }
+
+    .artilec__name {
+        font-size: 120px;
+        text-align: left;
+        padding-left: 5%;
+    }
+
+    .artilec__text {
+        font-size: 100px;
+        text-align: left;
+        padding-left: 5%;
+    }
+
+    .artilec__name1 {
+        font-size: 120px;
+    }
+
+    .artilec__text1 {
+        font-size: 120px;
+    }
+
+    .end__text {
+        font-size: 150px;
+    }
+
+    .text {
+        font-size: 120px;
+        color: rgb(161, 163, 163);
+    }
+
+    .artilec {
+        width: auto;
+        height: auto;
+    }
+
+    .image__end {
+        width: 600px;
+        height: 550px;
+    }
+
+    .image__end1 {
+        width: 400px;
+        height: 350px;
+        padding-bottom: 100px;
+    }
+
+    .image__artilec {
+        width: 800px;
+        height: 450px;
+    }
 }

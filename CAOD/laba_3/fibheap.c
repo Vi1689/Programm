@@ -118,7 +118,7 @@ void FibHeapConsolidate(struct fibheap* heap)
     for (int i = 0; i < degree; ++i) {
         a[i] = NULL;
     }
-    for (struct node* w = NULL; w != heap->min; w = w->right) {
+    for (struct node* w = heap->min->left; w != heap->min; w = w->right) {
         struct node* x = w;
         int d = x->degree;
         while (a[d] != NULL) {
@@ -145,12 +145,24 @@ void FibHeapConsolidate(struct fibheap* heap)
 
 void fibheapswap(struct node* x, struct node* y)
 {
-    int key = x->key;
-    char* value = x->value;
+    struct node* z = x;
+    x->child = y->child;
+    x->degree = y->degree;
     x->key = y->key;
+    x->left = y->left;
+    x->mark = y->mark;
+    x->parent = y->parent;
+    x->right = y->right;
     x->value = y->value;
-    y->key = key;
-    y->value = value;
+
+    y->child = z->child;
+    y->degree = z->degree;
+    y->key = z->key;
+    y->left = z->left;
+    y->mark = z->mark;
+    y->parent = z->parent;
+    y->right = z->right;
+    y->value = z->value;
 }
 
 int D(struct fibheap* n)
@@ -180,7 +192,7 @@ void fibheap_decrease_key(struct fibheap* heap, struct node* x, int newkey)
     }
     x->key = newkey;
     struct node* y = x->parent;
-    if (y != NULL && x->key > y->key) {
+    if (y != NULL && x->key < y->key) {
         fibheapCut(heap, x, y);
         fibheapCascadingCut(heap, y);
     }
@@ -222,6 +234,13 @@ void print(struct fibheap* heap)
     printf("%d ", heap->min->key);
     while (node != heap->min) {
         printf("%d ", node->key);
+        if (node->child != NULL) {
+            struct node* child = node->child;
+            while (child != NULL) {
+                printf("%d ", child->key);
+                child = child->child;
+            }
+        }
         node = node->left;
     }
     printf("\n");

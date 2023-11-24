@@ -12,6 +12,10 @@ double wtime()
 int main()
 {
     struct rbtree* a = rbtree_create(1, "1");
+    for(int i = 2; i < 10; ++i){
+        a = rbtree_add(a, i, "a");
+    }
+    rbtree_print_dfs((a), 1);
     /*
     a = rbtree_add((a), 2, "1");
     a = rbtree_add((a), 3, "1");

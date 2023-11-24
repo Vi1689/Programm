@@ -1,6 +1,6 @@
 APP_NAME = main
-LIB_STATIC = laba_3
-LIB_DYNAMIC = fibheap
+LIB_STATIC = kursach
+LIB_DYNAMIC = main
 
 
 all: $(LIB_STATIC)/$(LIB_STATIC).o gdb $(LIB_STATIC)/$(LIB_DYNAMIC).o
@@ -25,6 +25,6 @@ gdb_run:
 	gdb main
 
 valgrind:
-	valgrind --tool=memcheck --leak-check=yes ./$(APP_NAME)
+	valgrind --tool=memcheck --leak-check=yes  -s ./$(APP_NAME)
 
 .PHONY: all clean run gdb gdb_run valgrind

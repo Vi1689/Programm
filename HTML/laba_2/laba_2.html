@@ -1,8 +1,8 @@
 <html>
-<link rel="stylesheet" href="style.css">
 
 <head>
     <base target="_blank">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
@@ -34,7 +34,7 @@
             <p class="about__text1">
                 Основное
             </p>
-            <h1>
+            <h1 class="about__text1">
                 Почему не стоит начинать играть одному
             </h1>
         </div>
@@ -51,9 +51,9 @@
 
     <div class="image">
         <div class="image_flex">
-            <button class="image__button" onclick="img2()"><</button>
-                    <img id="image" src="images/ob1.png">
-                    <button class="image__button" onclick="img1()">></button>
+            <button class="image__button" onclick="img2()">&lt</button>
+            <img class="image__small" id="image" src="images/ob1.png">
+            <button class="image__button" onclick="img1()">&gt</button>
         </div>
         <div style="padding-top: 10px;"></div>
         <button class="image__button" onclick="img3(0)">1</button>
@@ -84,7 +84,7 @@
             </div>
             <div class="artilec__grid">
                 <div class="artilec__flex">
-                    <a href="https://www.dota2.com/hero/phantomassassin"><img src="images/ob6.1.png"></a>
+                    <a href="https://www.dota2.com/hero/phantomassassin"><img class="image__artilec" src="images/ob6.1.png"></a>
                     <div class="artilec__grid">
                         <a href="https://www.dota2.com/hero/phantomassassin">
                             <h1 class="artilec__name">Phantom Assasin</h1>
@@ -95,7 +95,7 @@
                     </div>
                 </div>
                 <div class="artilec__flex">
-                    <a href="https://www.dota2.com/hero/sniper"><img src="images/ob7.1.png"></a>
+                    <a href="https://www.dota2.com/hero/sniper"><img class="image__artilec" src="images/ob7.1.png"></a>
                     <div class="artilec__grid">
                         <a href="https://www.dota2.com/hero/sniper">
                             <h1 class="artilec__name">Sniper</h1>
@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 <div class="artilec__flex">
-                    <a href="https://www.dota2.com/hero/riki"><img src="images/ob8.1.png"></a>
+                    <a href="https://www.dota2.com/hero/riki"><img class="image__artilec" src="images/ob8.1.png"></a>
                     <div class="artilec__grid">
                         <a href="https://www.dota2.com/hero/riki">
                             <h1 class="artilec__name">Riki</h1>
@@ -120,15 +120,16 @@
         </div>
     </div>
 
-    <div class="container">
-        <p class="about__text">
-            Всю дальнейшую информацию можно получить связавшись со мной в Discord, Steam, Dota 2 написанных ниже.
-        </p>
-    </div>
+        <div class="container">
+            <p class="about__text">
+                Всю дальнейшую информацию можно получить связавшись со мной в Discord, Steam, Dota 2 написанных ниже.
+            </p>
+        </div>
 
-    <div class="image">
-        <img class="image__big" src="images/ob12.png">
-    </div>
+        <div class="image">
+            <img class="image__big" src="images/ob12.png">
+        </div>
+    
 
     <div class="end">
         <div class="container">
@@ -139,8 +140,8 @@
                 <p class="text">Dota 2 - 170542547</p>
             </div>
             <div class="image">
-                <a href="https://discord.com/"><img src="images/ob14.png"></a>
-                <a href="https://store.steampowered.com/"><img src="images/ob15.png" style="padding-bottom: 3%;"></a>
+                <a href="https://discord.com/"><img class="image__end" src="images/ob14.png"></a>
+                <a href="https://store.steampowered.com/"><img class="image__end1" src="images/ob15.png"></a>
             </div>
         </div>
     </div>

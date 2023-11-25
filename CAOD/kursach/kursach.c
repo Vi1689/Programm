@@ -85,6 +85,17 @@ void flipColor(node* n)
 
 node* search(llrbtree* tree, int key)
 {
+    node* n = node_search(tree, key);
+
+    if (!n) {
+        printf("Такого узла нет. Вот корень\n");
+        return tree->root;
+    }
+    return n;
+}
+
+node* node_search(llrbtree* tree, int key)
+{
     node* n = tree->root;
 
     while (n) {
@@ -102,7 +113,7 @@ node* search(llrbtree* tree, int key)
 
 llrbtree* delete(llrbtree* tree, int key)
 {
-    if (search(tree, key) == NULL) {
+    if (!node_search(tree, key)) {
         return tree;
     }
 
@@ -153,6 +164,28 @@ node* node_delete(node* n, int key)
     return fixup(n);
 }
 
+node* llrbtree_min(llrbtree* tree)
+{
+    node* n = node_Min(tree->root);
+
+    if (!n) {
+        printf("Такого узла нет. Вот корень\n");
+        return tree->root;
+    }
+    return n;
+}
+
+node* llrbtree_max(llrbtree* tree)
+{
+    node* n = node_Max(tree->root);
+
+    if (!n) {
+        printf("Такого узла нет. Вот корень\n");
+        return tree->root;
+    }
+    return n;
+}
+
 node* node_Min(node* n)
 {
     if (!n) {
@@ -160,6 +193,17 @@ node* node_Min(node* n)
     }
     while (n->left) {
         n = n->left;
+    }
+    return n;
+}
+
+node* node_Max(node* n)
+{
+    if (!n) {
+        return NULL;
+    }
+    while (n->right) {
+        n = n->right;
     }
     return n;
 }
@@ -215,16 +259,21 @@ node* fixup(node* n)
     return n;
 }
 
-void print(node* tree, int level)
+void print(llrbtree* tree)
+{
+    node_print(tree->root, 0);
+}
+
+void node_print(node* tree, int level)
 {
     if (tree) {
-        print(tree->left, level + 1);
+        node_print(tree->right, level + 1);
         for (int i = 0; i < level; ++i) {
             printf("\t");
         }
         printf("%d(%d)", tree->key, level);
         tree->color ? printf("(r)\n") : printf("(b)\n");
-        print(tree->right, level + 1);
+        node_print(tree->left, level + 1);
     }
 }
 

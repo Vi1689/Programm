@@ -32,13 +32,21 @@ void flipColor(node* n);
 
 node* search(llrbtree* tree, int key);
 
+node* node_search(llrbtree* tree, int key);
+
 llrbtree* delete(llrbtree* tree, int key);
 
 node* node_delete(node* tree, int key);
 
+node* llrbtree_min(llrbtree* tree);
+
+node* llrbtree_max(llrbtree* tree);
+
 node* deleteMin(node* n);
 
 node* node_Min(node* n);
+
+node* node_Max(node* n);
 
 node* moveRedtoLeft(node* n);
 
@@ -46,7 +54,9 @@ node* moveRedtoRight(node* n);
 
 node* fixup(node* n);
 
-void print(node* tree, int level);
+void print(llrbtree* tree);
+
+void node_print(node* tree, int level);
 
 void llrbtree_free(llrbtree* tree);
 

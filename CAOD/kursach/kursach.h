@@ -34,6 +34,16 @@ node* search(llrbtree* tree, int key);
 
 llrbtree* delete(llrbtree* tree, int key);
 
+node* node_delete(node* tree, int key);
+
+node* deleteMin(node* n);
+
+node* node_Min(node* n);
+
+node* moveRedtoLeft(node* n);
+
+node* moveRedtoRight(node* n);
+
 node* fixup(node* n);
 
 void print(node* tree, int level);

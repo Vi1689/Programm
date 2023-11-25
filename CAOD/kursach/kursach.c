@@ -114,12 +114,91 @@ llrbtree* delete(llrbtree* tree, int key)
     if (tree->root) {
         tree->root->color = false;
     }
-    
+
     return tree;
 }
 
-node* node_delete(node* tree, int key)
+node* node_delete(node* n, int key)
 {
+    node* temp;
+    if (key < n->key) {
+        if (n->left) {
+            if (!isRed(n->left) && !isRed(n->left->left)) {
+                n = moveRedtoLeft(n);
+            }
+            n->left = node_delete(n->left, key);
+        }
+    } else {
+        if (isRed(n->left)) {
+            n = rightRotate(n);
+        }
+        if (key == n->key && !n->right) {
+            free(n);
+            return NULL;
+        }
+        if (n->right) {
+            if (!isRed(n->right) && !isRed(n->right->left)) {
+                n = moveRedtoRight(n);
+            }
+            if (key == n->key) {
+                temp = node_Min(n->right);
+                n->key = temp->key;
+                n->value = temp->value;
+                n->right = deleteMin(n->right);
+            } else {
+                n->right = node_delete(n->right, key);
+            }
+        }
+    }
+    return fixup(n);
+}
+
+node* node_Min(node* n)
+{
+    if (!n) {
+        return NULL;
+    }
+    while (n->left) {
+        n = n->left;
+    }
+    return n;
+}
+
+node* deleteMin(node* n)
+{
+    if (!n) {
+        return NULL;
+    }
+    if (!n->left) {
+        free(n);
+        return NULL;
+    }
+    if (!isRed(n->left) && !isRed(n->left->left)) {
+        n = moveRedtoLeft(n);
+    }
+    n->left = deleteMin(n->left);
+    return fixup(n);
+}
+
+node* moveRedtoLeft(node* n)
+{
+    flipColor(n);
+    if (n && n->right && isRed(n->right->left)) {
+        n->right = rightRotate(n->right);
+        n = leftRotate(n);
+        flipColor(n);
+    }
+    return n;
+}
+
+node* moveRedtoRight(node* n)
+{
+    flipColor(n);
+    if (n && n->left && isRed(n->left->left)) {
+        n = rightRotate(n);
+        flipColor(n);
+    }
+    return n;
 }
 
 node* fixup(node* n)
@@ -140,8 +219,11 @@ void print(node* tree, int level)
 {
     if (tree) {
         print(tree->left, level + 1);
+        for (int i = 0; i < level; ++i) {
+            printf("\t");
+        }
         printf("%d(%d)", tree->key, level);
-        tree->color ? printf("(red) ") : printf("(black) ");
+        tree->color ? printf("(r)\n") : printf("(b)\n");
         print(tree->right, level + 1);
     }
 }

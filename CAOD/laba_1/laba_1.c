@@ -12,10 +12,10 @@ double wtime()
 int main()
 {
     struct rbtree* a = rbtree_create(1, "1");
-    for(int i = 2; i < 10; ++i){
-        a = rbtree_add(a, i, "a");
+    for (int i = 2; i < 50000; ++i) {
+        // a = rbtree_add(a, i, "a");
     }
-    rbtree_print_dfs((a), 1);
+    // rbtree_print_dfs((a), 1);
     /*
     a = rbtree_add((a), 2, "1");
     a = rbtree_add((a), 3, "1");
@@ -25,30 +25,29 @@ int main()
     */
     /*
     for (int i = 2; i < 50001; ++i) {
-        if (!(i % (10000 / 2))) {
+        if (!(i % (5000))) {
             double t = wtime();
             for (int j = 1; j < 1000000; ++j) {
-                rbtree_lookup((a), i);
+                a = rbtree_add((a), i, "1");
             }
             t = wtime() - t;
-            printf("n = %d\ntime = %.6lf\n", i, t);
+            //printf("%.6lf\n", t);
         }
         a = rbtree_add((a), i, "1");
     }
     */
-    /*
-     for (int i = 50001; i > 1; --i) {
-         if (!(i % (10000 / 2))) {
-             double t = wtime();
-             for (int j = 1; j < 10000; ++j) {
-                 rbtree_lookup(root(a), i);
-             }
-             t = wtime() - t;
-             printf("n = %d\ntime = %.6lf\n", i, t);
-         }
-         rbtree_add(root(a), i, "1");
-     }
-     */
+
+    for (int i = 50001; i > 0; --i) {
+        if (!(i % (5000))) {
+            double t = wtime();
+            for (int j = 1; j < 1000000; ++j) {
+                a = rbtree_add((a), i, "1");
+            }
+            t = wtime() - t;
+            printf("%.6lf\n", t);
+        }
+    }
+
     printf("\n");
     rbtree_free((a));
 }

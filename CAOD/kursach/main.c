@@ -13,27 +13,42 @@ int main()
 {
     llrbtree* a = create();
 
-    for (int i = 0; i < 50000; ++i) {
+    for (int i = 1; i < 8; ++i) {
         a = insert(a, i, "a");
     }
-
-    // print(a);
-    // printf("\n");
-    // a = delete (a, 3);
-    // a = delete (a, 2);
-    // a = delete (a, 4);
-    // a = delete (a, 1);
-    // a = insert(a, 100, "asd");
     print(a);
     printf("\n");
+    a = delete (a, 4);
+    print(a);
+    printf("\n");
+    /*
+        for (int i = 1; i <= 50001; ++i) {
+            if (!(i % (5000))) {
+                double t = wtime();
+                for (int j = 0; j < 1000000; ++j) {
+                    a = delete(a, i);
+                }
+                t = wtime() - t;
+                printf("%.6lf\n", t);
+            }
+            a = insert(a, i, "a");
+        }
+        printf("\n");
+        // a = insert(a, 0, "a");
+        for (int i = 50001; i > 0; --i) {
+            if (!(i % (5000))) {
+                double t = wtime();
+                for (int j = 0; j < 1000000; ++j) {
+                    a = delete(a, i);
+                }
+                t = wtime() - t;
+                printf("%.6lf\n", t);
+            }
+            a = insert(a, i, "a");
+        }
 
-    node* n = search(a, 3);
-    printf("%d\n", n->key);
-    n = llrbtree_min(a);
-    printf("%d\n", n->key);
-    n = llrbtree_max(a);
-    printf("%d\n", n->key);
-
+        // print(a);
+    */
     llrbtree_free(a);
 
     return 0;

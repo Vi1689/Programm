@@ -44,6 +44,8 @@ node* llrbtree_max(llrbtree* tree);
 
 node* deleteMin(node* n);
 
+node* deleteMax(node* n);
+
 node* node_Min(node* n);
 
 node* node_Max(node* n);

@@ -88,7 +88,7 @@ node* search(llrbtree* tree, int key)
     node* n = node_search(tree, key);
 
     if (!n) {
-        printf("Такого узла нет. Вот корень\n");
+        //printf("Такого узла нет. Вот корень\n");
         return tree->root;
     }
     return n;
@@ -164,6 +164,76 @@ node* node_delete(node* n, int key)
     return fixup(n);
 }
 
+node* deleteMin(node* n)
+{
+    if (!n) {
+        return NULL;
+    }
+    if (!n->left) {
+        free(n);
+        return NULL;
+    }
+    if (!isRed(n->left) && !isRed(n->left->left)) {
+        n = moveRedtoLeft(n);
+    }
+    n->left = deleteMin(n->left);
+    return fixup(n);
+}
+
+node* deleteMax(node* n)
+{
+    if (!n) {
+        return NULL;
+    }
+    if (!n->right) {
+        free(n);
+        return NULL;
+    }
+    if (isRed(n->left)) {
+        n = rightRotate(n);
+    }
+    if (!isRed(n->right) && !isRed(n->right->left)) {
+        n = moveRedtoRight(n);
+    }
+    n->right = deleteMax(n->right);
+    return fixup(n);
+}
+
+node* moveRedtoLeft(node* n)
+{
+    flipColor(n);
+    if (n && n->right && isRed(n->right->left)) {
+        n->right = rightRotate(n->right);
+        n = leftRotate(n);
+        flipColor(n);
+    }
+    return n;
+}
+
+node* moveRedtoRight(node* n)
+{
+    flipColor(n);
+    if (n && n->left && isRed(n->left->left)) {
+        n = rightRotate(n);
+        flipColor(n);
+    }
+    return n;
+}
+
+node* fixup(node* n)
+{
+    if (isRed(n->right)) {
+        n = leftRotate(n);
+    }
+    if (isRed(n->left) && isRed(n->left->left)) {
+        n = rightRotate(n);
+    }
+    if (isRed(n->left) && isRed(n->right)) {
+        flipColor(n);
+    }
+    return n;
+}
+
 node* llrbtree_min(llrbtree* tree)
 {
     node* n = node_Min(tree->root);
@@ -204,57 +274,6 @@ node* node_Max(node* n)
     }
     while (n->right) {
         n = n->right;
-    }
-    return n;
-}
-
-node* deleteMin(node* n)
-{
-    if (!n) {
-        return NULL;
-    }
-    if (!n->left) {
-        free(n);
-        return NULL;
-    }
-    if (!isRed(n->left) && !isRed(n->left->left)) {
-        n = moveRedtoLeft(n);
-    }
-    n->left = deleteMin(n->left);
-    return fixup(n);
-}
-
-node* moveRedtoLeft(node* n)
-{
-    flipColor(n);
-    if (n && n->right && isRed(n->right->left)) {
-        n->right = rightRotate(n->right);
-        n = leftRotate(n);
-        flipColor(n);
-    }
-    return n;
-}
-
-node* moveRedtoRight(node* n)
-{
-    flipColor(n);
-    if (n && n->left && isRed(n->left->left)) {
-        n = rightRotate(n);
-        flipColor(n);
-    }
-    return n;
-}
-
-node* fixup(node* n)
-{
-    if (isRed(n->right)) {
-        n = leftRotate(n);
-    }
-    if (isRed(n->left) && isRed(n->left->left)) {
-        n = rightRotate(n);
-    }
-    if (isRed(n->left) && isRed(n->right)) {
-        flipColor(n);
     }
     return n;
 }

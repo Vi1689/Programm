@@ -258,7 +258,7 @@ struct rbtree*
 rbtree_delete_Fixup(struct rbtree* tree, struct rbtree* x, struct rbtree* z)
 {
     if (x) {
-        while (x->parent != NULL && x->color == '1') {  
+        while (x->parent != NULL && x->color == '1') {
             if (x == x->parent->left) {
                 struct rbtree* w = x->parent->right;
                 if (w->color == '0') {
@@ -352,7 +352,10 @@ void rbtree_print_dfs(struct rbtree* tree, int level)
     struct rbtree* tree1 = tree;
     if (tree) {
         rbtree_print_dfs(tree1->left, level + 1);
-        printf("%d(%d)(%c) ", tree1->key, level, tree1->color);
+        for (int i = 0; i < level; ++i) {
+            printf("\t");
+        }
+        printf("%d(%d)(%c)\n", tree1->key, level, tree1->color);
         rbtree_print_dfs(tree1->right, level + 1);
     }
 }

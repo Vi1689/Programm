@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <title>Laba_15</title>
+    <base target="_blank">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <canvas id="ball" class="ball"></canvas>
+    <canvas id="model" class="model"></canvas>
+    <canvas id="pole" class="pole"></canvas>
+    <div class="buttoncontainer">
+        <div class="buttoncontainer__time">
+            <div>Time - </div>
+            <div id="text_min">0</div>
+            <div>:</div>
+            <div id="text_s">0</div>
+            <div>:</div>
+            <div id="text_ms">0</div>
+            <div class="buttoncontainer__obj">
+                <canvas id="obj"></canvas>
+                <div class="obj"> - Object</div>
+                <canvas id="mod"></canvas>
+                <div class="obj"> - Model</div>
+            </div>
+        </div>
+        <div class="buttoncontainer__speed">
+            <button class="button__start" onclick="drawball()">Start</button>
+            <div>Initial uncertainty of a direction of speed =</div>
+            <input type="text" id="speed" value="10">
+        </div>
+        <div class="buttoncontainer__flex">
+            <button class="button" onclick="drawballstop()">Stop</button>
+            <button class="button" onclick="dwarballgo()">Go on</button>
+        </div>
+    </div>
+    <div class="slidecontainer">
+        <input type="range" min="-380" max="380" value="0" class="slider" id="myRange" onclick="polsunok()">
+    </div>
+    <div id="sad"></div>
+    <script src="abc.Js"></script>
+</body>
+
+</html>

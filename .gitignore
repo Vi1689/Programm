@@ -5,3 +5,5 @@ main
 *.d
 tests
 *.a
+gdb
+*.txt

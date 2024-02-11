@@ -1,6 +1,6 @@
 APP_NAME = main
-LIB_STATIC = kursach
-LIB_DYNAMIC = oke
+LIB_STATIC = laba_7
+LIB_DYNAMIC = my_list
 
 
 all: $(LIB_STATIC)/$(LIB_STATIC).o gdb $(LIB_STATIC)/$(LIB_DYNAMIC).o

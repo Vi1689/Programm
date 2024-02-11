@@ -19,36 +19,28 @@ int main()
     print(a);
     printf("\n");
     a = delete (a, 4);
+    //a = delete (a, 6);
+    //a = delete (a, 4);
     print(a);
     printf("\n");
-    /*
-        for (int i = 1; i <= 50001; ++i) {
-            if (!(i % (5000))) {
-                double t = wtime();
-                for (int j = 0; j < 1000000; ++j) {
-                    a = delete(a, i);
-                }
-                t = wtime() - t;
-                printf("%.6lf\n", t);
-            }
-            a = insert(a, i, "a");
-        }
-        printf("\n");
-        // a = insert(a, 0, "a");
-        for (int i = 50001; i > 0; --i) {
-            if (!(i % (5000))) {
-                double t = wtime();
-                for (int j = 0; j < 1000000; ++j) {
-                    a = delete(a, i);
-                }
-                t = wtime() - t;
-                printf("%.6lf\n", t);
-            }
-            a = insert(a, i, "a");
-        }
+    node* n = search(a, 1);
+    printf("%d\n", n->key);
 
-        // print(a);
-    */
+
+
+    for (int i = 1; i <= 50001; ++i) {
+        if (!(i % (5000))) {
+            double t = wtime();
+            for (int j = 0; j < 1000000; ++j) {
+                search(a, i);
+            }
+            t = wtime() - t;
+            //printf("%.6lf\n", t);
+        }
+        a = insert(a, i, "a");
+    }
+    printf("\n");
+
     llrbtree_free(a);
 
     return 0;

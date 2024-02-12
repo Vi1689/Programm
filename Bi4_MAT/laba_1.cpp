@@ -70,6 +70,8 @@ int main()
     }
     delete[] a;
     delete[] b;
+
+    
     Test.close();
     Out.close();
 }

@@ -69,9 +69,7 @@ int main()
         delete[] a[i];
     }
     delete[] a;
-    delete[] b;
-
-    
+    delete[] b;    
     Test.close();
     Out.close();
 }

@@ -1,4 +1,4 @@
-APP_NAME = laba_1
+APP_NAME = laba_2
 GDB_NAME = gdb
 
 all: $(APP_NAME).o gdb

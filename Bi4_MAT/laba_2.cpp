@@ -29,6 +29,7 @@ void iter(double** a, double* b, double* x, int n, double e)
             nx[i] = x[i];
         }
     }
+    delete[] nx;
 }
 
 int main()

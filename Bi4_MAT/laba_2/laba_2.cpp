@@ -34,10 +34,10 @@ void iter(double** a, double* b, double* x, int n, double e)
 
 int main()
 {
-    string str = "Gauss_Test_1.txt";
-    cin >> str[11];
+    string str = "laba_2/Gauss_Test_1.txt";
+    cin >> str[18];
     ifstream Test(str);
-    ofstream Out("otvet.txt");
+    ofstream Out("laba_2/otvet.txt");
     unsigned int n;
     Test >> n;
     double** a = new double*[n];

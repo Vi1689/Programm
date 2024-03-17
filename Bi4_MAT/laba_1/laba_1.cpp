@@ -44,10 +44,10 @@ void gays(double** a, double* b, int n)
 
 int main()
 {
-    string str = "Gauss_Test_1.txt";
-    cin >> str[11];
+    string str = "laba_1/Gauss_Test_1.txt";
+    cin >> str[18];
     ifstream Test(str);
-    ofstream Out("otvet.txt");
+    ofstream Out("laba_1/otvet.txt");
     unsigned int n;
     Test >> n;
     double** a = new double*[n];

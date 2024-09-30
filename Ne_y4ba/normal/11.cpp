@@ -22,15 +22,15 @@ std::vector<size_t> dfs(std::vector<node> matrix, size_t src)
                 st.push(matrix[temp].arr[j]);
                 if (src == matrix[temp].arr[j] && subsequence.size() > 2) {
                     subsequence.push_back(temp);
-                    return subsequence;
+                    goto end;
                 }
             }
             subsequence.push_back(temp);
         }
         matrix[temp].pos = true;
     }
-    subsequence.erase(subsequence.begin(), subsequence.end());
-
+    // subsequence.erase(subsequence.begin(), subsequence.end());
+end:
     return subsequence;
 }
 

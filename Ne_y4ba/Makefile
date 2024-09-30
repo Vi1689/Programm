@@ -1,10 +1,11 @@
-NAME = 434
+NAME = 11
+LIB = normal
 APP_NAME = main
 APP_NAME_GDB = gdb
-LIB = easy
 
 all: $(LIB)/$(NAME).o gdb
-	g++ -Wall $(LIB)/$(NAME).o -o $(LIB)/$(APP_NAME)
+	g++ -Wall -Werror $(LIB)/$(NAME).o -o $(LIB)/$(APP_NAME)
+	clang-format -i $(LIB)/$(NAME).cpp
 
 $(LIB)/$(NAME).o: $(LIB)/$(NAME).cpp
 	g++ -c $(LIB)/$(NAME).cpp -o $(LIB)/$(NAME).o
@@ -12,7 +13,7 @@ $(LIB)/$(NAME).o: $(LIB)/$(NAME).cpp
 run:
 	./$(LIB)/$(APP_NAME)
 
-clear: 
+clean: 
 	rm $(LIB)/$(APP_NAME) $(LIB)/$(NAME).o $(LIB)/$(APP_NAME_GDB)
 
 gdb:
@@ -24,4 +25,4 @@ gdb_run:
 valgrind:
 	valgrind --tool=memcheck --leak-check=yes  -s ./$(LIB)/$(APP_NAME)
 
-.PHONY: all clear run gdb gdb_run valgrind
+.PHONY: all clean run gdb gdb_run valgrind

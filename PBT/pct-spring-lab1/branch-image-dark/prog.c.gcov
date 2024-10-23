@@ -1,0 +1,93 @@
+        -:    0:Source:prog.c
+        -:    0:Graph:./prog.gcno
+        -:    0:Data:./prog.gcda
+        -:    0:Runs:1
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <inttypes.h>
+        -:    4:#include <time.h>
+        -:    5:
+        -:    6:enum {W = 15360, H = 8640};
+        -:    7:
+function wtime called 4 returned 100% blocks executed 100%
+        4:    8:double wtime()
+        -:    9:{
+        4:   10:    struct timespec ts;
+        4:   11:    clock_gettime(CLOCK_MONOTONIC, &ts);
+вызов    0 вернул 100%
+        4:   12:    return ts.tv_sec + ts.tv_nsec * 1E-9;
+        -:   13:}
+        -:   14:
+function image_is_dark called 0 returned 0% blocks executed 0%
+    #####:   15:int image_is_dark(uint8_t *img, int width, int height)
+        -:   16:{
+    #####:   17:    int count = 0;
+    #####:   18:    for (int i = 0; i < height; i++) {
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    #####:   19:        for (int j = 0; j < width; j++) {
+branch  0 never executed
+branch  1 never executed (fallthrough)
+    #####:   20:            if (img[i * width + j] >= 128) {
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    #####:   21:                count++;
+        -:   22:            }
+        -:   23:        }
+        -:   24:    }
+    #####:   25:    return count < width * height / 2;
+        -:   26:}
+        -:   27:
+function image_is_dark_opt called 1 returned 100% blocks executed 100%
+        1:   28:int image_is_dark_opt(uint8_t *img, int width, int height)
+        -:   29:{
+        1:   30:    int count = 0;
+     8641:   31:    for (int i = 0; i < height; i++) {
+переход  0 выполнен 100% (fallthrough)
+переход  1 выполнен 1%
+132719040:   32:        for (int j = 0; j < width; j++) {
+переход  0 выполнен 100%
+переход  1 выполнен 1% (fallthrough)
+132710400:   33:                count += (img[i * width + j] >= 128);
+        -:   34:        }
+        -:   35:    }
+        1:   36:    return count < width * height / 2;
+        -:   37:}
+        -:   38:
+function main called 1 returned 100% blocks executed 100%
+        1:   39:int main()
+        -:   40:{
+        1:   41:    uint8_t *image = malloc(sizeof(*image) * W * H);
+        1:   42:    srand(0);
+     8641:   43:    for (int i = 0; i < H; i++) {
+вызов    0 вернул 100%
+переход  1 выполнен 100%
+переход  2 выполнен 1% (fallthrough)
+132719040:   44:        for (int j = 0; j < W; j++) {
+переход  0 выполнен 100%
+переход  1 выполнен 1% (fallthrough)
+132710400:   45:            image[i * W + j] = rand() % 256;
+вызов    0 вернул 100%
+        -:   46:        }
+        -:   47:    }
+        -:   48:
+        1:   49:    double t = wtime();
+вызов    0 вернул 100%
+        -:   50:    //int dark = image_is_dark(image, W, H);
+        1:   51:    t = wtime() - t;
+вызов    0 вернул 100%
+        -:   52:  
+        -:   53:    //printf("Time %.6f, dark %d\n", t, dark);
+        -:   54:    
+        1:   55:    t = wtime();
+вызов    0 вернул 100%
+        1:   56:    int dark = image_is_dark_opt(image, W, H);
+        1:   57:    t = wtime() - t;
+вызов    0 вернул 100%
+        -:   58:
+        1:   59:    printf("Time %.6f, dark %d\n", t, dark);
+вызов    0 вернул 100%
+        -:   60:
+        1:   61:    free(image);
+        1:   62:    return 0;
+        -:   63:}

@@ -1,10 +1,10 @@
-NAME = 126
-LIB = normal
+NAME = 71
+LIB = easy
 APP_NAME = main
 APP_NAME_GDB = gdb
 
 all: gdb
-	g++ -Wall -Werror -fsanitize=address -static-libasan $(LIB)/$(NAME).cpp -o $(LIB)/$(APP_NAME)
+	g++ -g -std=c++20 -Wall -Werror -fsanitize=address -static-libasan $(LIB)/$(NAME).cpp -o $(LIB)/$(APP_NAME)
 	clang-format -i $(LIB)/$(NAME).cpp
 
 run:
@@ -14,7 +14,7 @@ clean:
 	rm $(LIB)/$(APP_NAME) $(LIB)/$(APP_NAME_GDB)
 
 gdb:
-	g++ -g $(LIB)/$(NAME).cpp -o $(LIB)/$(APP_NAME_GDB) -lm
+	g++ -g -std=c++20 $(LIB)/$(NAME).cpp -o $(LIB)/$(APP_NAME_GDB) -lm
 
 gdb_run:
 	gdb $(LIB)/$(APP_NAME_GDB)

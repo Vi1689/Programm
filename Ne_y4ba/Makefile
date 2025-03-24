@@ -1,5 +1,5 @@
-NAME = 71
-LIB = easy
+NAME = 18
+LIB = normal
 APP_NAME = main
 APP_NAME_GDB = gdb
 
@@ -20,7 +20,7 @@ gdb_run:
 	gdb $(LIB)/$(APP_NAME_GDB)
 
 valgrind:
-	g++ -Wall -Werror $(LIB)/$(NAME).cpp -o $(LIB)/$(APP_NAME)
+	g++ -Wall -Werror -std=c++20 $(LIB)/$(NAME).cpp -o $(LIB)/$(APP_NAME)
 	valgrind --tool=memcheck --leak-check=yes  -s ./$(LIB)/$(APP_NAME)
 
 .PHONY: all clean run gdb gdb_run valgrind

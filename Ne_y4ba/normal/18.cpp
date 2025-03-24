@@ -1,196 +1,260 @@
+#include <cstdlib>
 #include <iostream>
 #include <stack>
 #include <string>
+#include <vector>
 
-bool check(std::string& s)
-{
-    std::string allowed_characters = "1234567890+-*() ";
-    for (const auto& i : s) {
-        if (allowed_characters.find(i) == std::string::npos) {
-            return true;
+enum TYPE { NUM, ADD, SUB, MUL, DEV, LB, RB };
+
+struct token {
+    char id;
+    int value;
+};
+
+class Parser {
+private:
+    std::vector<token> set_tokens;
+    size_t count;
+    token lookahead;
+
+    std::stack<long> number;
+    std::stack<char> operand;
+
+    void operation(char op)
+    {
+        long b = number.top();
+        number.pop();
+        long a = number.top();
+        number.pop();
+        operand.pop();
+        switch (op) {
+        case '+':
+            number.push(a + b);
+            break;
+        case '-':
+            number.push(a - b);
+            break;
+        case '*':
+            number.push(a * b);
+            break;
+        case '/':
+            if (!b) {
+                std::cout << "WRONG\n";
+                std::exit(0);
+            }
+            number.push(a / b);
+            break;
         }
     }
 
-    size_t left_bracket = 0, right_bracket = 0;
-    bool empty_brackets = false;
-    for (const auto& i : s) {
-        if (i == ' ') {
-            continue;
-        }
-        if (i == '(') {
-            left_bracket++;
-            empty_brackets = true;
-        } else if (i == ')') {
-            right_bracket++;
-            if (empty_brackets) {
-                return true;
+    void score()
+    {
+        if (!operand.empty()) {
+            if (operand.top() == '*') {
+                operation('*');
+            } else if (operand.top() == '/') {
+                operation('/');
+            } else if (operand.top() == '-') {
+                operation('-');
+            } else if (operand.top() == '~') {
+                long a = number.top();
+                number.pop();
+                operand.pop();
+                number.push(a * -1);
+            } else if (operand.top() == '+') {
+                operation('+');
             }
+        }
+    }
+
+    void expr()
+    {
+        term();
+        rest_expr();
+    }
+
+    void rest_expr()
+    {
+        while (true) {
+            if (lookahead.id == ADD) {
+                match(lookahead);
+                score();
+                term();
+                score();
+                operand.push('+');
+                rest_expr();
+            } else if (lookahead.id == SUB) {
+                match(lookahead);
+                score();
+                term();
+                score();
+                operand.push('-');
+                rest_expr();
+            } else {
+                return;
+            }
+        }
+    }
+
+    void term()
+    {
+        primary();
+        rest_term();
+    }
+
+    void rest_term()
+    {
+        while (true) {
+            if (lookahead.id == MUL) {
+                match(lookahead);
+                score();
+                primary();
+                score();
+                operand.push('*');
+                rest_term();
+            } else if (lookahead.id == DEV) {
+                match(lookahead);
+                score();
+                primary();
+                score();
+                operand.push('/');
+                rest_term();
+            } else {
+                return;
+            }
+        }
+    }
+
+    void primary()
+    {
+        if (lookahead.id == NUM) {
+            number.push(lookahead.value);
+            match(lookahead);
+        } else if (lookahead.id == SUB) {
+            operand.push('~');
+            match(lookahead);
+            primary();
+        } else if (lookahead.id == LB) {
+            operand.push('(');
+            match(lookahead);
+            expr();
+            while (operand.top() != '(') {
+                score();
+            }
+            operand.pop();
+            match(lookahead);
         } else {
-            empty_brackets = false;
-        }
-        if (right_bracket > left_bracket) {
-            return true;
+            std::cout << "WRONG\n";
+            std::exit(0);
         }
     }
 
-    bool num = false, a = false;
-    for (const auto& i : s) {
-        if (i == ' ') {
-            if (num) {
-                num = false;
-                a = true;
-            }
-            continue;
-        }
-
-        if (i == '1' || i == '2' || i == '3' || i == '4' || i == '5' || i == '6'
-            || i == '7' || i == '8' || i == '9' || i == '0') {
-            if (a) {
-                return true;
-            }
-            num = true;
-            a = false;
+    void match(token ch)
+    {
+        if (lookahead.id == ch.id) {
+            lookahead = readChar();
         } else {
-            num = false;
-            a = false;
+            std::cout << "WRONG\n";
+            std::exit(0);
         }
     }
 
-    bool op = false, b = false;
-    for (const auto& i : s) {
-        if (i == ' ') {
-            if (op) {
-                num = false;
-                b = true;
+    token readChar()
+    {
+        if (count > set_tokens.size()) {
+            std::cout << "WRONG\n";
+            std::exit(0);
+        }
+        return set_tokens[count++];
+    }
+
+    void splitting_into_tokens()
+    {
+        char c;
+        int num;
+
+        while ((c = std::cin.get()) != '\n') {
+            if (isdigit(c)) {
+                std::cin.unget();
+                if (std::cin >> num) {
+                    set_tokens.push_back({NUM, num});
+                }
+            } else if (c == '+') {
+                set_tokens.push_back({ADD, '+'});
+            } else if (c == '-') {
+                set_tokens.push_back({SUB, '-'});
+            } else if (c == '*') {
+                set_tokens.push_back({MUL, '*'});
+            } else if (c == '/') {
+                set_tokens.push_back({DEV, '/'});
+            } else if (c == '(') {
+                set_tokens.push_back({LB, '('});
+            } else if (c == ')') {
+                set_tokens.push_back({RB, ')'});
+            } else if (c == ' ') {
+                continue;
+            } else {
+                std::cout << "WRONG\n";
+                std::exit(0);
             }
-            continue;
         }
+    }
 
-        if (i == '+' || i == '-' || i == '*') {
-            if (b) {    
-                return true;
+    void check()
+    {
+        splitting_into_tokens();
+        size_t count_lb = 0, count_rb = 0;
+        for (const auto [id, value] : set_tokens) {
+            count_lb += id == LB;
+            count_rb += id == RB;
+            if (count_rb > count_lb) {
+                std::cout << "WRONG\n";
+                std::exit(0);
             }
-            op = true;
-            b = false;
-        } else {
-            op = false;
-            b = false;
+        }
+        if (count_lb != count_rb) {
+            std::cout << "WRONG\n";
+            std::exit(0);
+        }
+
+        for (size_t i = 0; i < set_tokens.size() - 1; ++i) {
+            if (set_tokens[i].id == NUM && set_tokens[i + 1].id == NUM) {
+                std::cout << "WRONG\n";
+                std::exit(0);
+            }
         }
     }
 
-    return false;
-}
-
-void add_number(std::string& substring, std::stack<long int>& number)
-{
-    if (substring.length() > 0) {
-        const auto temp = (stol(substring));
-        substring.erase(0, substring.length());
-        number.push(temp);
+public:
+    Parser()
+    {
     }
-}
+
+    void parse()
+    {
+        check();
+        count = 0;
+        lookahead = readChar();
+        expr();
+    }
+
+    long calc()
+    {
+        while (!operand.empty()) {
+            score();
+        }
+        return number.top();
+    }
+
+    ~Parser()
+    {
+    }
+};
 
 int main()
 {
-    std::string s, substring;
-    std::getline(std::cin, s);
-
-    if (check(s)) {
-        std::cout << "WRONG\n";
-        return 0;
-    }
-
-    std::stack<long int> number;
-    std::stack<char> operand;
-
-    for (const auto& i : s) {
-        if (i == ' ') {
-            add_number(substring, number);
-            continue;
-        }
-        if (i == '(') {
-            operand.push(i);
-        } else if (i == ')') {
-            add_number(substring, number);
-            while (operand.top() != '(') {
-                if (operand.top() == '-') {
-                    long b = number.top();
-                    number.pop();
-                    long a = number.top();
-                    number.pop();
-                    operand.pop();
-                    number.push(a - b);
-                } else if (operand.top() == '+') {
-                    long b = number.top();
-                    number.pop();
-                    long a = number.top();
-                    number.pop();
-                    operand.pop();
-                    number.push(a + b);
-                } else {
-                    long b = number.top();
-                    number.pop();
-                    long a = number.top();
-                    number.pop();
-                    operand.pop();
-                    number.push(a * b);
-                }
-            }
-            operand.pop();
-
-        } else if (i == '+' || i == '*' || i == '-') {
-            add_number(substring, number);
-            if (!operand.empty()) {
-                if (operand.top() == '*' && (i == '+' || i == '-')) {
-                    long b = number.top();
-                    number.pop();
-                    long a = number.top();
-                    number.pop();
-                    operand.pop();
-                    number.push(a * b);
-                } else if (operand.top() == '-' && (i == '+' || i == '-')) {
-                    long b = number.top();
-                    number.pop();
-                    long a = number.top();
-                    number.pop();
-                    operand.pop();
-                    number.push(a - b);
-                }
-            }
-            operand.push(i);
-        } else {
-            substring += i;
-        }
-    }
-
-    add_number(substring, number);
-
-    while (!operand.empty()) {
-        if (operand.top() == '-') {
-            long b = number.top();
-            number.pop();
-            long a = number.top();
-            number.pop();
-            operand.pop();
-            number.push(a - b);
-        } else if (operand.top() == '+') {
-            long b = number.top();
-            number.pop();
-            long a = number.top();
-            number.pop();
-            operand.pop();
-            number.push(a + b);
-        } else {
-            long b = number.top();
-            number.pop();
-            long a = number.top();
-            number.pop();
-            operand.pop();
-            number.push(a * b);
-        }
-    }
-
-    std::cout << number.top() << "\n";
-
-    return 0;
+    Parser parser;
+    parser.parse();
+    std::cout << parser.calc() << '\n';
+    std::exit(0);
 }

@@ -1,30 +1,38 @@
+// Решена
+
 #include <cstdlib>
 #include <iostream>
 #include <stack>
 #include <string>
 #include <vector>
 
-enum TYPE { NUM, ADD, SUB, MUL, DEV, LB, RB };
+enum TYPE { NUM, ADD, SUB, MUL, DEV, LB, RB, END };
 
 struct token {
     char id;
-    int value;
+    long double value;
 };
 
 class Parser {
 private:
     std::vector<token> set_tokens;
-    size_t count;
+    size_t current_token;
     token lookahead;
 
-    std::stack<long> number;
+    std::stack<long double> number;
     std::stack<char> operand;
+
+    void expr()
+    {
+        term();
+        rest_expr();
+    }
 
     void operation(char op)
     {
-        long b = number.top();
+        long double b = number.top();
         number.pop();
-        long a = number.top();
+        long double a = number.top();
         number.pop();
         operand.pop();
         switch (op) {
@@ -38,61 +46,56 @@ private:
             number.push(a * b);
             break;
         case '/':
-            if (!b) {
-                std::cout << "WRONG\n";
-                std::exit(0);
-            }
             number.push(a / b);
             break;
         }
     }
 
-    void score()
+    void unary_minus()
     {
         if (!operand.empty()) {
-            if (operand.top() == '*') {
-                operation('*');
-            } else if (operand.top() == '/') {
-                operation('/');
-            } else if (operand.top() == '-') {
-                operation('-');
-            } else if (operand.top() == '~') {
-                long a = number.top();
+            if (operand.top() == '~') {
+                long double a = number.top();
                 number.pop();
                 operand.pop();
                 number.push(a * -1);
-            } else if (operand.top() == '+') {
-                operation('+');
             }
         }
     }
 
-    void expr()
+    void score()
     {
-        term();
-        rest_expr();
+        if (operand.top() == '*') {
+            operation('*');
+        } else if (operand.top() == '/') {
+            operation('/');
+        } else if (operand.top() == '-') {
+            operation('-');
+        } else if (operand.top() == '+') {
+            operation('+');
+        }
     }
 
     void rest_expr()
     {
-        while (true) {
-            if (lookahead.id == ADD) {
-                match(lookahead);
-                score();
-                term();
-                score();
-                operand.push('+');
-                rest_expr();
-            } else if (lookahead.id == SUB) {
-                match(lookahead);
-                score();
-                term();
-                score();
-                operand.push('-');
-                rest_expr();
-            } else {
-                return;
-            }
+        readtoken();
+        if (lookahead.id == ADD) {
+            next_token();
+            unary_minus();
+            term();
+            unary_minus();
+            operand.push('+');
+            rest_expr();
+        } else if (lookahead.id == SUB) {
+            next_token();
+            unary_minus();
+            term();
+            unary_minus();
+            operand.push('-');
+            score();
+            rest_expr();
+        } else {
+            return;
         }
     }
 
@@ -104,77 +107,75 @@ private:
 
     void rest_term()
     {
-        while (true) {
-            if (lookahead.id == MUL) {
-                match(lookahead);
-                score();
-                primary();
-                score();
-                operand.push('*');
-                rest_term();
-            } else if (lookahead.id == DEV) {
-                match(lookahead);
-                score();
-                primary();
-                score();
-                operand.push('/');
-                rest_term();
-            } else {
-                return;
-            }
+        readtoken();
+        if (lookahead.id == MUL) {
+            next_token();
+            unary_minus();
+            primary();
+            unary_minus();
+            operand.push('*');
+            score();
+            rest_term();
+        } else if (lookahead.id == DEV) {
+            next_token();
+            unary_minus();
+            primary();
+            unary_minus();
+            operand.push('/');
+            score();
+            rest_term();
+        } else {
+            return;
         }
     }
 
     void primary()
     {
+        readtoken();
         if (lookahead.id == NUM) {
             number.push(lookahead.value);
-            match(lookahead);
+            next_token();
         } else if (lookahead.id == SUB) {
             operand.push('~');
-            match(lookahead);
+            next_token();
             primary();
         } else if (lookahead.id == LB) {
             operand.push('(');
-            match(lookahead);
+            next_token();
             expr();
             while (operand.top() != '(') {
+                unary_minus();
                 score();
             }
             operand.pop();
-            match(lookahead);
+            next_token();
         } else {
             std::cout << "WRONG\n";
             std::exit(0);
         }
     }
 
-    void match(token ch)
+    void next_token()
     {
-        if (lookahead.id == ch.id) {
-            lookahead = readChar();
-        } else {
-            std::cout << "WRONG\n";
-            std::exit(0);
-        }
+        current_token++;
     }
 
-    token readChar()
+    void readtoken()
     {
-        if (count > set_tokens.size()) {
+        if (current_token >= set_tokens.size()) {
             std::cout << "WRONG\n";
             std::exit(0);
         }
-        return set_tokens[count++];
+        lookahead = set_tokens[current_token];
     }
 
     void splitting_into_tokens()
     {
         char c;
-        int num;
+        long double num;
 
         while ((c = std::cin.get()) != '\n') {
-            if (isdigit(c)) {
+            if (isdigit(c) || c == '.') {
                 std::cin.unget();
                 if (std::cin >> num) {
                     set_tokens.push_back({NUM, num});
@@ -198,6 +199,7 @@ private:
                 std::exit(0);
             }
         }
+        set_tokens.push_back({END, 0});
     }
 
     void check()
@@ -233,17 +235,19 @@ public:
     void parse()
     {
         check();
-        count = 0;
-        lookahead = readChar();
+        current_token = 0;
+        readtoken();
         expr();
     }
 
-    long calc()
+    long double calc()
     {
         while (!operand.empty()) {
+            unary_minus();
             score();
         }
         return number.top();
+        return 0;
     }
 
     ~Parser()

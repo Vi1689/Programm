@@ -1,8 +1,7 @@
 set terminal pdf color enhanced font 'Calibri,16' size 14cm,10cm
 set output 'lab_2.pdf'
 set key inside left top font 'Calibri,16'
-set colorsequence podo
-set style line 1 lc rgb 'blue' lw 1 pt 5 ps 0.5
+set xlabel "Threads" foset style line 1 lc rgb 'blue' lw 1 pt 5 ps 0.5
 set style line 2 lt 1 lw 2 pt 2 ps 0.5
 set style line 3 lt 2 lw 2 pt 3 ps 0.5
 set style line 4 lt 4 lw 2 pt 5 ps 0.5
@@ -17,8 +16,7 @@ set style line 12 lt 12 lw 1 pt 13 ps 0.5
 set style line 13 lt 13 lw 1 pt 3 ps 0.5
 set style line 14 lt 14 lw 1 pt 5 ps 0.5
 set style line 15 lt 15 lw 1 pt 7 ps 0.5
-set style line 16 lt 16 lw 1 pt 9 ps 0.5
-set xlabel "Threads" font 'Calibri,16'
+set style line 16 lt 16 lw 1 pt 9 ps 0.5nt 'Calibri,16'
 set ylabel "Speedup" font 'Calibri,16'
 set format y "%.12g"
 

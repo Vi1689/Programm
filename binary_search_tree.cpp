@@ -2,24 +2,19 @@
 
 #include <iostream>
 
-struct node {
-    size_t data;
-    node* right;
-    node* left;
-    node* parent;
-};
-
 class bin_tree {
 private:
+    struct node {
+        size_t data;
+        node* right = nullptr;
+        node* left = nullptr;
+        node* parent = nullptr;
+    };
     node* root;
-
     node* create_node(size_t arg)
     {
-        node* temp = new node[1];
+        node* temp = new node();
         temp->data = arg;
-        temp->left = nullptr;
-        temp->right = nullptr;
-        temp->parent = nullptr;
         return temp;
     }
 
@@ -28,7 +23,7 @@ private:
         if (tree != nullptr) {
             bin_tree_free(tree->left);
             bin_tree_free(tree->right);
-            delete[] tree;
+            delete tree;
         }
     }
 
@@ -98,6 +93,22 @@ public:
         return false;
     }
 
+    node* find(size_t arg)
+    {
+        node* temp = root;
+        while (temp != nullptr) {
+            if (temp->data > arg) {
+                temp = temp->left;
+            } else if (temp->data < arg) {
+                temp = temp->right;
+            } else {
+                return temp;
+            }
+        }
+
+        return nullptr;
+    }
+
     size_t max()
     {
         node* temp = root;
@@ -126,17 +137,7 @@ public:
 
     void delete_node(size_t arg)
     {
-        node* temp = root;
-
-        while (temp != nullptr) {
-            if (temp->data > arg) {
-                temp = temp->left;
-            } else if (temp->data < arg) {
-                temp = temp->right;
-            } else {
-                break;
-            }
-        }
+        node* temp = find(arg);
 
         if (temp == nullptr) {
             return;
@@ -151,7 +152,7 @@ public:
             } else {
                 root = nullptr;
             }
-            delete[] temp;
+            delete temp;
         } else if (temp->left == nullptr) {
             if (temp->parent != nullptr) {
                 if (temp->parent->data > temp->data) {
@@ -163,7 +164,7 @@ public:
                 temp->right->parent = nullptr;
                 root = temp->right;
             }
-            delete[] temp;
+            delete temp;
         } else if (temp->right == nullptr) {
             if (temp->parent != nullptr) {
                 if (temp->parent->data > temp->data) {
@@ -175,7 +176,7 @@ public:
                 temp->left->parent = nullptr;
                 root = temp->left;
             }
-            delete[] temp;
+            delete temp;
         } else {
             node* conservation = temp;
             if (temp->parent != nullptr) {
@@ -221,7 +222,7 @@ public:
                 temp->left->parent = temp;
                 root = temp;
             }
-            delete[] conservation;
+            delete conservation;
         }
     }
 

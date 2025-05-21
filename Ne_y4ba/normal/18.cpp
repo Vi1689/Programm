@@ -22,12 +22,6 @@ private:
     std::stack<long double> number;
     std::stack<char> operand;
 
-    void expr()
-    {
-        term();
-        rest_expr();
-    }
-
     void operation(char op)
     {
         long double b = number.top();
@@ -46,6 +40,10 @@ private:
             number.push(a * b);
             break;
         case '/':
+            if (b == 0) {
+                std::cout << "WRONG\n";
+                std::exit(0);
+            }
             number.push(a / b);
             break;
         }
@@ -65,15 +63,23 @@ private:
 
     void score()
     {
-        if (operand.top() == '*') {
-            operation('*');
-        } else if (operand.top() == '/') {
-            operation('/');
-        } else if (operand.top() == '-') {
-            operation('-');
-        } else if (operand.top() == '+') {
-            operation('+');
+        if (!operand.empty()) {
+            if (operand.top() == '*') {
+                operation('*');
+            } else if (operand.top() == '/') {
+                operation('/');
+            } else if (operand.top() == '-') {
+                operation('-');
+            } else if (operand.top() == '+') {
+                operation('+');
+            }
         }
+    }
+
+    void expr()
+    {
+        term();
+        rest_expr();
     }
 
     void rest_expr()

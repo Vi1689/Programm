@@ -1,5 +1,5 @@
-NAME = 18
-LIB = normal
+NAME = I
+LIB = RuCode
 APP_NAME = main
 APP_NAME_GDB = gdb
 

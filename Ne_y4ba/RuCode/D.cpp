@@ -1,3 +1,5 @@
+//  Решена
+
 #include <cmath>
 #include <iostream>
 

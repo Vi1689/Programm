@@ -1,3 +1,5 @@
+//  Решена
+
 #include <iostream>
 #include <string>
 

@@ -10,7 +10,5 @@ int main()
         sarr.push_back(s);
     }
 
-    
-
     return 0;
 }

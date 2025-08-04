@@ -40,7 +40,7 @@ int main()
     int max = -1000000000;
 
     for (itr = mp.begin(); itr != mp.end(); ++itr) {
-        if(itr->second >= max){
+        if (itr->second >= max) {
             max = itr->second;
             s = itr->first;
         }

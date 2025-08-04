@@ -26,8 +26,6 @@ int main()
         std::cin >> arr_k[i];
     }
 
-    
-
     delete[] arr_n;
     delete[] arr_x;
     delete[] arr_k;

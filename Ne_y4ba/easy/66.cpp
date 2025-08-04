@@ -1,4 +1,4 @@
-//Решена
+// Решена
 
 #include <iostream>
 

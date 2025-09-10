@@ -3,9 +3,9 @@
 #include <limits>
 #include <vector>
 
-int task_1(int a, int x, int p)
+long int task_1(long int a, long int x, long int p)
 {
-    int out = 1;
+    long int out = 1;
     while (x) {
         a %= p;
         if (x & 1)
@@ -16,9 +16,9 @@ int task_1(int a, int x, int p)
     return out % p;
 }
 
-bool task_2(int p)
+bool task_2(long int p)
 {
-    for (int a = 2; a <= p - 2; ++a) {
+    for (long int a = 2; a <= p - 2; ++a) {
         if (task_1(a, p - 1, p) != 1)
             return false;
     }
@@ -26,9 +26,9 @@ bool task_2(int p)
     return true;
 }
 
-void task_3(int a, int b, std::vector<int>& t)
+void task_3(long int a, long int b, std::vector<long int>& t)
 {
-    std::vector<int> u(3), v(3);
+    std::vector<long int> u(3), v(3);
     u[0] = a, u[1] = 1, u[2] = 0;
     v[0] = b, v[1] = 0, v[2] = 1;
     if (a < b) {
@@ -36,7 +36,7 @@ void task_3(int a, int b, std::vector<int>& t)
     }
 
     while (t[0] != 1) {
-        int q = u[0] / v[0], tmp = t[0];
+        long int q = u[0] / v[0], tmp = t[0];
         t[0] = u[0] % v[0];
         if (t[0]) {
             t[1] = u[1] - q * v[1];
@@ -52,7 +52,7 @@ void task_3(int a, int b, std::vector<int>& t)
 
 int main()
 {
-    int a, x, p;
+    long int a, x, p;
 start:
     std::cout << "Выберите задание:\n"
                  "\t1 - первое\n"
@@ -68,7 +68,7 @@ start:
         std::cin >> a;
         std::cout << (task_2(a) ? "Простое" : "Не простое") << '\n';
     } else if (a == 3) {
-        std::vector<int> tmp(3);
+        std::vector<long int> tmp(3);
         srand(time(NULL));
     start1:
         std::cout << "Третье задание\nВыберите 'a' и 'b':\n"

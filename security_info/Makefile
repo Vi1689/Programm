@@ -1,5 +1,5 @@
 NAME = main
-LIB = lab_1
+LIB = lab_2
 APP_NAME = main
 APP_NAME_GDB = gdb
 

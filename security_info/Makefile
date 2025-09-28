@@ -1,26 +1,28 @@
-NAME = main
-LIB = lab_2
-APP_NAME = main
-APP_NAME_GDB = gdb
+CXX = g++
+CXXFLAGS = -Wall -O2 -Iinclude
+LDFLAGS = -lgmpxx -lgmp
 
-all: gdb
-	g++ -g -std=c++20 -Wall -Werror -fsanitize=address -static-libasan -O3 $(LIB)/$(NAME).cpp -o $(LIB)/$(APP_NAME)
-	clang-format -i $(LIB)/$(NAME).cpp
+SRC = $(wildcard src/*.cpp)
+OBJ = $(SRC:.cpp=.o)
+APP_NAME = main
+LIB_NAME = info_protection
+
+all: $(APP_NAME)
+	clang-format -i */*.hpp
+	clang-format -i */*.cpp
+	clang-format -i *.cpp
+
+$(APP_NAME): $(APP_NAME).o $(OBJ)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+$(APP_NAME).o: $(APP_NAME).cpp include/$(LIB_NAME).hpp
+	$(CXX) -c $(APP_NAME).cpp -Iinclude
+
+src/%.o: src/%.cpp include/$(LIB_NAME).hpp
+	$(CXX) -c $< -o $@ -Iinclude
 
 run:
-	./$(LIB)/$(APP_NAME)
+	./$(APP_NAME)
 
-clean: 
-	rm $(LIB)/$(APP_NAME) $(LIB)/$(APP_NAME_GDB)
-
-gdb:
-	g++ -g -std=c++20 $(LIB)/$(NAME).cpp -o $(LIB)/$(APP_NAME_GDB) -lm
-
-gdb_run:
-	gdb $(LIB)/$(APP_NAME_GDB)
-
-valgrind:
-	g++ -Wall -Werror -std=c++20 $(LIB)/$(NAME).cpp -o $(LIB)/$(APP_NAME)
-	valgrind --tool=memcheck --leak-check=yes  -s ./$(LIB)/$(APP_NAME)
-
-.PHONY: all clean run gdb gdb_run valgrind
+clean:
+	rm -f $(OBJ) $(APP_NAME).o $(APP_NAME)

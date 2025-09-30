@@ -2,20 +2,30 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <string>
+
+void print_menu()
+{
+    std::vector<std::string> s
+            = {"Меню:\n",
+               "1. Быстрое возведение в степень\n",
+               "2. Тест Ферма\n",
+               "3. Расширенный алгоритм Евклида\n",
+               "4. Дискретный логарифм (Baby-step Giant-step)\n",
+               "5. Протокол Диффи–Хеллмана\n",
+               "6. Шифровка/расшифровка при помощи шифра Шамира\n",
+               "7. Шифровка/расшифровка при помощи шифра Эль-Гамаля\n",
+               "Выберите пункт: "};
+    for (const auto& line : s)
+        std::cout << line;
+}
 
 int main()
 {
     srand(time(nullptr));
 
     int choice;
-    std::cout << "Меню:\n";
-    std::cout << "1. Быстрое возведение в степень\n";
-    std::cout << "2. Тест Ферма\n";
-    std::cout << "3. Расширенный алгоритм Евклида\n";
-    std::cout << "4. Дискретный логарифм (Baby-step Giant-step)\n";
-    std::cout << "5. Протокол Диффи–Хеллмана\n";
-    std::cout << "6. Шифровка/расшифровка при помощи шифра Шамира\n";
-    std::cout << "Выберите пункт: ";
+    print_menu();
     std::cin >> choice;
 
     int input_choice;
@@ -112,8 +122,7 @@ int main()
             keys = generate_shamir_keys();
             std::cout << "Ключи:\n"
                       << "p = " << keys.p << "\n"
-                      << "Ca = " << keys.Ca << ", Da = " << keys.Da << "\n"
-                      << "Cb = " << keys.Cb << ", Db = " << keys.Db << "\n";
+                      << "Ca = " << keys.Ca << ", Cb = " << keys.Cb << "\n";
         }
 
         if (mode == 1) {
@@ -122,8 +131,8 @@ int main()
             std::cin >> infile >> outfile;
 
             if (input_choice == 1) {
-                std::cout << "Введите p, Ca, Cb, Da, Db: ";
-                std::cin >> keys.p >> keys.Ca >> keys.Cb >> keys.Da >> keys.Db;
+                std::cout << "Введите p, Ca, Cb: ";
+                std::cin >> keys.p >> keys.Ca >> keys.Cb;
             }
             shamir_encrypt_file(infile, outfile, keys);
             std::cout << "Файл зашифрован.\n";
@@ -133,10 +142,48 @@ int main()
             std::cin >> infile >> outfile;
 
             if (input_choice == 1) {
-                std::cout << "Введите p, Ca, Cb, Da, Db: ";
-                std::cin >> keys.p >> keys.Ca >> keys.Cb >> keys.Da >> keys.Db;
+                std::cout << "Введите p, Ca, Cb: ";
+                std::cin >> keys.p >> keys.Ca >> keys.Cb;
             }
             shamir_decrypt_file(infile, outfile, keys);
+            std::cout << "Файл расшифрован.\n";
+        }
+    } else if (choice == 7) {
+        int mode;
+        std::cout << "1. Шифрование файла\n2. "
+                     "Дешифрование файла\nВыберите режим: ";
+        std::cin >> mode;
+
+        ElGamalKeys keys;
+
+        if (input_choice != 1) {
+            keys = generate_elgamal_keys();
+            std::cout << "Ключи:\n"
+                      << "p = " << keys.p << "\n"
+                      << "g = " << keys.g << ", x = " << keys.x << "\n";
+        }
+
+        if (mode == 1) {
+            std::string infile, outfile;
+            std::cout << "Введите имя исходного файла и зашифрованного: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, g, x: ";
+                std::cin >> keys.p >> keys.g >> keys.x;
+            }
+            elgamal_encrypt_file(infile, outfile, keys);
+            std::cout << "Файл зашифрован.\n";
+        } else if (mode == 2) {
+            std::string infile, outfile;
+            std::cout << "Введите имя зашифрованного файла и расшифрованного:";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, g, x: ";
+                std::cin >> keys.p >> keys.g >> keys.x;
+            }
+            elgamal_decrypt_file(infile, outfile, keys);
             std::cout << "Файл расшифрован.\n";
         }
     } else {

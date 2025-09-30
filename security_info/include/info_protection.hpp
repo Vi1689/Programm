@@ -32,11 +32,9 @@ struct ShamirKeys {
     long int p; // простое число
     long int Ca;
     long int Cb;
-    long int Da;
-    long int Db;
 };
 
-ShamirKeys generate_shamir_keys(int min_p = 256, int max_p = 5000);
+ShamirKeys generate_shamir_keys(int min_p = 256, int max_p = 1000);
 void shamir_encrypt_file(
         const std::string& input_file,
         const std::string& output_file,
@@ -45,3 +43,20 @@ void shamir_decrypt_file(
         const std::string& input_file,
         const std::string& output_file,
         const ShamirKeys& keys);
+
+// ЛР 5
+struct ElGamalKeys {
+    long int p;
+    long int g;
+    long int x;
+};
+
+ElGamalKeys generate_elgamal_keys(int min_p = 256, int max_p = 1000);
+void elgamal_encrypt_file(
+        const std::string& input_file,
+        const std::string& output_file,
+        const ElGamalKeys& keys);
+void elgamal_decrypt_file(
+        const std::string& input_file,
+        const std::string& output_file,
+        const ElGamalKeys& keys);

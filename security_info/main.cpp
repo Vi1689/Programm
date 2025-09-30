@@ -3,22 +3,6 @@
 #include <ctime>
 #include <iostream>
 
-long long generate_random(const long long& min, const long long& max)
-{
-    long long r = min + rand() % (max - min + 1);
-    return r;
-}
-
-long long generate_prime(const long long& min, const long long& max)
-{
-    while (true) {
-        long long candidate = generate_random(min, max);
-        if (prime_number(candidate)) {
-            return candidate;
-        }
-    }
-}
-
 int main()
 {
     srand(time(nullptr));
@@ -39,7 +23,7 @@ int main()
     std::cin >> input_choice;
 
     if (choice == 1) {
-        long long a, x, p;
+        long int a, x, p;
         if (input_choice == 1) {
             std::cout << "Введите a, x, p: ";
             std::cin >> a >> x >> p;
@@ -52,7 +36,7 @@ int main()
         }
         std::cout << "Результат: " << mod_pow(a, x, p) << "\n";
     } else if (choice == 2) {
-        long long p;
+        long int p;
         if (input_choice == 1) {
             std::cout << "Введите число p: ";
             std::cin >> p;
@@ -62,7 +46,7 @@ int main()
         }
         std::cout << (prime_number(p) ? "Вероятно простое\n" : "Составное\n");
     } else if (choice == 3) {
-        long long a, b, x, y;
+        long int a, b, x, y;
         if (input_choice == 1) {
             std::cout << "Введите a, b: ";
             std::cin >> a >> b;
@@ -71,29 +55,29 @@ int main()
             b = generate_prime(2, 100);
             std::cout << "Сгенерировано: a=" << a << ", b=" << b << "\n";
         }
-        long long g = gcd_extended(a, b, x, y);
+        long int g = gcd_extended(a, b, x, y);
         std::cout << "НОД = " << g << ", x = " << x << ", y = " << y << "\n";
     } else if (choice == 4) {
-        long long a, y, p;
+        long int a, y, p;
         if (input_choice == 1) {
             std::cout << "Решаем y = a^x mod p\nВведите a, y, p: ";
             std::cin >> a >> y >> p;
         } else {
             a = generate_prime(2, 50);
             p = generate_prime(50, 200);
-            long long x = generate_random(2, 10);
+            long int x = generate_random(2, 10);
             y = mod_pow(a, x, p);
             std::cout << "Сгенерировано: a=" << a << ", y=" << y << ", p=" << p
                       << "\n";
         }
         try {
-            long long x = baby_step_giant_step(a, y, p);
+            long int x = baby_step_giant_step(a, y, p);
             std::cout << "x = " << x << "\n";
         } catch (const std::exception& e) {
             std::cerr << e.what() << "\n";
         }
     } else if (choice == 5) {
-        long long p, g, Xa, Xb;
+        long int p, g, Xa, Xb;
         if (input_choice == 1) {
             std::cout << "Введите p, g, Xa, Xb: ";
             std::cin >> p >> g >> Xa >> Xb;
@@ -107,7 +91,7 @@ int main()
         }
         try {
             struct keys key = {Xa, Xb};
-            long long x = diffie_hellman_key_exchange(p, g, &key);
+            long int x = diffie_hellman_key_exchange(p, g, &key);
             if (x == -1) {
                 std::cout << "Ответа нет\n";
             } else {
@@ -116,50 +100,46 @@ int main()
         } catch (const std::exception& e) {
             std::cerr << e.what() << "\n";
         }
-    }
-    //  else if (choice == 6) {
-    //     int mode;
-    //     std::cout << "1. Шифрование файла\n2. "
-    //                  "Дешифрование файла\nВыберите режим: ";
-    //     std::cin >> mode;
+    } else if (choice == 6) {
+        int mode;
+        std::cout << "1. Шифрование файла\n2. "
+                     "Дешифрование файла\nВыберите режим: ";
+        std::cin >> mode;
 
-    //     ShamirKeys keys;
+        ShamirKeys keys;
 
-    //     if (input_choice != 1) {
-    //         keys = generate_shamir_keys();
-    //         std::cout << "Ключи:\n"
-    //                   << "p = " << keys.p << "\n"
-    //                   << "C1 = " << keys.C1 << ", D1 = " << keys.D1 << "\n"
-    //                   << "C2 = " << keys.C2 << ", D2 = " << keys.D2 << "\n";
-    //     }
+        if (input_choice != 1) {
+            keys = generate_shamir_keys();
+            std::cout << "Ключи:\n"
+                      << "p = " << keys.p << "\n"
+                      << "Ca = " << keys.Ca << ", Da = " << keys.Da << "\n"
+                      << "Cb = " << keys.Cb << ", Db = " << keys.Db << "\n";
+        }
 
-    //     if (mode == 1) {
-    //         std::string infile, outfile;
-    //         std::cout << "Введите имя исходного файла и зашифрованного: ";
-    //         std::cin >> infile >> outfile;
+        if (mode == 1) {
+            std::string infile, outfile;
+            std::cout << "Введите имя исходного файла и зашифрованного: ";
+            std::cin >> infile >> outfile;
 
-    //         if (input_choice == 1) {
-    //             std::cout << "Введите p, C1, C2, D1, D2: ";
-    //             std::cin >> keys.p >> keys.C1 >> keys.C2 >> keys.D1 >>
-    //             keys.D2;
-    //         }
-    //         shamir_encrypt_file(infile, outfile, keys);
-    //         std::cout << "Файл зашифрован.\n";
-    //     } else if (mode == 2) {
-    //         std::string infile, outfile;
-    //         std::cout << "Введите имя зашифрованного файла и расшифрованного:
-    //         "; std::cin >> infile >> outfile;
+            if (input_choice == 1) {
+                std::cout << "Введите p, Ca, Cb, Da, Db: ";
+                std::cin >> keys.p >> keys.Ca >> keys.Cb >> keys.Da >> keys.Db;
+            }
+            shamir_encrypt_file(infile, outfile, keys);
+            std::cout << "Файл зашифрован.\n";
+        } else if (mode == 2) {
+            std::string infile, outfile;
+            std::cout << "Введите имя зашифрованного файла и расшифрованного:";
+            std::cin >> infile >> outfile;
 
-    //         if (input_choice == 1) {
-    //             std::cout << "Введите p, C1, C2, D1, D2: ";
-    //             std::cin >> keys.p >> keys.C1 >> keys.C2 >> keys.D1 >>
-    //             keys.D2;
-    //         }
-    //         shamir_decrypt_file(infile, outfile, keys);
-    //         std::cout << "Файл расшифрован.\n";
-    //     }
-    // }
-    else {
+            if (input_choice == 1) {
+                std::cout << "Введите p, Ca, Cb, Da, Db: ";
+                std::cin >> keys.p >> keys.Ca >> keys.Cb >> keys.Da >> keys.Db;
+            }
+            shamir_decrypt_file(infile, outfile, keys);
+            std::cout << "Файл расшифрован.\n";
+        }
+    } else {
         std::cout << "Неверный выбор!\n";
     }
 

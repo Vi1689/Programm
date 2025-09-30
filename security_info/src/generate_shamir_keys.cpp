@@ -1,41 +1,32 @@
 #include "../include/info_protection.hpp"
 
-// ShamirKeys generate_shamir_keys(int bit_length)
-// {
-//     gmp_randclass rng(gmp_randinit_default);
-//     rng.seed(time(nullptr));
+ShamirKeys generate_shamir_keys(int min_p, int max_p)
+{
+    ShamirKeys keys;
+    long int x, y;
 
-//     ShamirKeys keys;
+    // Генерируем простое число p
+    keys.p = generate_prime(min_p, max_p);
 
-//     // Генерация простого числа p
-//     while (true) {
-//         keys.p = rng.get_z_bits(bit_length);
-//         if (keys.p % 2 == 0)
-//             keys.p += 1;
-//         if (fermat_primality(keys.p))
-//             break;
-//     }
+    // Генерация Ca и Da
+    while (true) {
+        keys.Ca = generate_random(2, keys.p - 2);
+        if (gcd_extended(keys.Ca, keys.p - 1, x, y) == 1) {
+            keys.Da = (x % (keys.p - 1) + (keys.p - 1)) % (keys.p - 1);
+            if ((keys.Ca * keys.Da) % (keys.p - 1) == 1)
+                break;
+        }
+    }
 
-//     mpz_class tmp;
-//     // Генерация C1, D1
-//     while (true) {
-//         keys.C1 = rng.get_z_range(keys.p - 2) + 1;
-//         if (gcd_extended(keys.C1, keys.p - 1, tmp, tmp) == 1)
-//             break;
-//     }
-//     gcd_extended(keys.C1, keys.p - 1, tmp, keys.D1);
-//     if (keys.D1 < 0)
-//         keys.D1 += (keys.p - 1);
+    // Генерация Cb и Db
+    while (true) {
+        keys.Cb = generate_random(2, keys.p - 2);
+        if (gcd_extended(keys.Cb, keys.p - 1, x, y) == 1) {
+            keys.Db = (x % (keys.p - 1) + (keys.p - 1)) % (keys.p - 1);
+            if ((keys.Cb * keys.Db) % (keys.p - 1) == 1)
+                break;
+        }
+    }
 
-//     // Генерация C2, D2
-//     while (true) {
-//         keys.C2 = rng.get_z_range(keys.p - 2) + 1;
-//         if (gcd_extended(keys.C2, keys.p - 1, tmp, tmp) == 1)
-//             break;
-//     }
-//     gcd_extended(keys.C2, keys.p - 1, tmp, keys.D2);
-//     if (keys.D2 < 0)
-//         keys.D2 += (keys.p - 1);
-
-//     return keys;
-// }
+    return keys;
+}

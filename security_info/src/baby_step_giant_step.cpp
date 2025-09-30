@@ -1,6 +1,6 @@
 #include "../include/info_protection.hpp"
 
-long int my_pow(long int a, long int x, long int p, long int y)
+static long int my_pow(long int a, long int x, long int p, long int y)
 {
     long int out = 1;
     while (x) {

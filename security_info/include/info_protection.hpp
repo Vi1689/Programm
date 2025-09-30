@@ -29,7 +29,7 @@ long int diffie_hellman_key_exchange(long int p, long int g, struct keys* key);
 
 // ЛР4
 struct ShamirKeys {
-    long int p; // простое число
+    long int p; 
     long int Ca;
     long int Cb;
 };

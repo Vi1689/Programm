@@ -15,6 +15,7 @@ void print_menu()
                "5. Протокол Диффи–Хеллмана\n",
                "6. Шифровка/расшифровка при помощи шифра Шамира\n",
                "7. Шифровка/расшифровка при помощи шифра Эль-Гамаля\n",
+               "8. Шифровка/расшифровка при помощи шифра RSA\n",
                "Выберите пункт: "};
     for (const auto& line : s)
         std::cout << line;
@@ -184,6 +185,44 @@ int main()
                 std::cin >> keys.p >> keys.g >> keys.x;
             }
             elgamal_decrypt_file(infile, outfile, keys);
+            std::cout << "Файл расшифрован.\n";
+        }
+    } else if (choice == 8) {
+        int mode;
+        std::cout << "1. Шифрование файла\n2. "
+                     "Дешифрование файла\nВыберите режим: ";
+        std::cin >> mode;
+
+        RSA keys;
+
+        if (input_choice != 1) {
+            keys = generate_rsa_keys();
+            std::cout << "Ключи:\n"
+                      << "p = " << keys.p << "\n"
+                      << "q = " << keys.q << ", d = " << keys.d << "\n";
+        }
+
+        if (mode == 1) {
+            std::string infile, outfile;
+            std::cout << "Введите имя исходного файла и зашифрованного: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, q, d: ";
+                std::cin >> keys.p >> keys.q >> keys.d;
+            }
+            rsa_encrypt_file(infile, outfile, keys);
+            std::cout << "Файл зашифрован.\n";
+        } else if (mode == 2) {
+            std::string infile, outfile;
+            std::cout << "Введите имя зашифрованного файла и расшифрованного:";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, q, d: ";
+                std::cin >> keys.p >> keys.q >> keys.d;
+            }
+            rsa_decrypt_file(infile, outfile, keys);
             std::cout << "Файл расшифрован.\n";
         }
     } else {

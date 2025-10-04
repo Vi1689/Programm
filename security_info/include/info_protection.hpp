@@ -29,7 +29,7 @@ long int diffie_hellman_key_exchange(long int p, long int g, struct keys* key);
 
 // ЛР4
 struct ShamirKeys {
-    long int p; 
+    long int p;
     long int Ca;
     long int Cb;
 };
@@ -60,3 +60,20 @@ void elgamal_decrypt_file(
         const std::string& input_file,
         const std::string& output_file,
         const ElGamalKeys& keys);
+
+// ЛР 6
+struct RSA {
+    long int p;
+    long int q;
+    long int d;
+};
+
+RSA generate_rsa_keys(int min_p = 256, int max_p = 1000);
+void rsa_encrypt_file(
+        const std::string& input_file,
+        const std::string& output_file,
+        const RSA& keys);
+void rsa_decrypt_file(
+        const std::string& input_file,
+        const std::string& output_file,
+        const RSA& keys);

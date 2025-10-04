@@ -232,16 +232,22 @@ int main()
                      "Дешифрование файла\nВыберите режим: ";
         std::cin >> mode;
 
-        struct keys key;
+        struct keys key {
+            0, 0
+        };
 
         if (input_choice != 1) {
-            long int p, g, Xa, Xb;
+            long int p = 0, g = 0, Xa = 0, Xb = 0;
             p = generate_prime(50, 200);
             g = generate_random(2, p - 1);
             Xa = generate_random(2, p - 2);
             Xb = generate_random(2, p - 2);
             key = {Xa, Xb};
-            diffie_hellman_key_exchange(p, g, &key);
+            while (diffie_hellman_key_exchange(p, g, &key)) {
+                Xa = generate_random(2, p - 2);
+                Xb = generate_random(2, p - 2);
+                key = {Xa, Xb};
+            }
             std::cout << "k = " << key.a << '\n';
         }
 

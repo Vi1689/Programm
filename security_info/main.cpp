@@ -16,6 +16,7 @@ void print_menu()
                "6. Шифровка/расшифровка при помощи шифра Шамира\n",
                "7. Шифровка/расшифровка при помощи шифра Эль-Гамаля\n",
                "8. Шифровка/расшифровка при помощи шифра RSA\n",
+               "9. Шифровка/расшифровка при помощи шифра Вернама\n",
                "Выберите пункт: "};
     for (const auto& line : s)
         std::cout << line;
@@ -223,6 +224,48 @@ int main()
                 std::cin >> keys.p >> keys.q >> keys.d;
             }
             rsa_decrypt_file(infile, outfile, keys);
+            std::cout << "Файл расшифрован.\n";
+        }
+    } else if (choice == 9) {
+        int mode;
+        std::cout << "1. Шифрование файла\n2. "
+                     "Дешифрование файла\nВыберите режим: ";
+        std::cin >> mode;
+
+        struct keys key;
+
+        if (input_choice != 1) {
+            long int p, g, Xa, Xb;
+            p = generate_prime(50, 200);
+            g = generate_random(2, p - 1);
+            Xa = generate_random(2, p - 2);
+            Xb = generate_random(2, p - 2);
+            key = {Xa, Xb};
+            diffie_hellman_key_exchange(p, g, &key);
+            std::cout << "k = " << key.a << '\n';
+        }
+
+        if (mode == 1) {
+            std::string infile, outfile;
+            std::cout << "Введите имя исходного файла и зашифрованного: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите k: ";
+                std::cin >> key.a;
+            }
+            vernam_encrypt_file(infile, outfile, key);
+            std::cout << "Файл зашифрован.\n";
+        } else if (mode == 2) {
+            std::string infile, outfile;
+            std::cout << "Введите имя зашифрованного файла и расшифрованного:";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите k: ";
+                std::cin >> key.a;
+            }
+            vernam_decrypt_file(infile, outfile, key);
             std::cout << "Файл расшифрован.\n";
         }
     } else {

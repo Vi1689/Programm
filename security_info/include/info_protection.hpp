@@ -77,3 +77,15 @@ void rsa_decrypt_file(
         const std::string& input_file,
         const std::string& output_file,
         const RSA& keys);
+
+// ЛР 7
+std::vector<unsigned char>
+generate_vernama_keys(size_t length, const keys& key);
+void vernam_encrypt_file(
+        const std::string& input_file,
+        const std::string& output_file,
+        const keys& key);
+void vernam_decrypt_file(
+        const std::string& input_file,
+        const std::string& output_file,
+        const keys& key);

@@ -19,6 +19,8 @@ void print_menu()
                "9. Шифровка/расшифровка при помощи шифра Вернама\n",
                "10. Электронная подпись RSA\n",
                "11. Электронная подпись Эль-Гамаля\n",
+               "12. Электронная подпись ГОСТ Р 34.10-94\n",
+               "13. Электронная подпись FIPS 186\n",
                "Выберите пункт: "};
     for (const auto& line : s)
         std::cout << line;
@@ -358,6 +360,96 @@ int main()
             }
             std::string s;
             elgamal_signature_check(infile, outfile, keys)
+                    ? s = "Подпись корректна"
+                    : s = "Подпись не корректна";
+            std::cout << s << '\n';
+        }
+    } else if (choice == 12) {
+        int mode;
+        std::cout << "1. Подпись файла\n2. "
+                     "Проверка подписи файла\nВыберите режим: ";
+        std::cin >> mode;
+
+        GOST94Keys keys;
+
+        if (input_choice != 1) {
+            keys = generate_gost94_keys();
+            std::cout << "Ключи:\n"
+                      << "p = " << keys.p << "\n"
+                      << "q = " << keys.q << ", a = " << keys.a << "\n"
+                      << "x = " << keys.x << "\n"
+                      << "y = " << keys.y << "\n";
+        }
+
+        if (mode == 1) {
+            std::string infile, outfile;
+            std::cout << "Введите имя файла который будет подписан и файл с "
+                         "подписью: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, q, a, x, y: ";
+                std::cin >> keys.p >> keys.q >> keys.a >> keys.x >> keys.y;
+            }
+            gost94_signature(infile, outfile, keys);
+            std::cout << "Файл подписан.\n";
+        } else if (mode == 2) {
+            std::string infile, outfile;
+            std::cout << "Введите имя файла для проверки подписи и файл с "
+                         "подписью: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, q, a, x, y: ";
+                std::cin >> keys.p >> keys.q >> keys.a >> keys.x >> keys.y;
+            }
+            std::string s;
+            gost94_signature_check(infile, outfile, keys)
+                    ? s = "Подпись корректна"
+                    : s = "Подпись не корректна";
+            std::cout << s << '\n';
+        }
+    } else if (choice == 13) {
+        int mode;
+        std::cout << "1. Подпись файла\n2. "
+                     "Проверка подписи файла\nВыберите режим: ";
+        std::cin >> mode;
+
+        DSAKeys keys;
+
+        if (input_choice != 1) {
+            keys = generate_dsa_keys();
+            std::cout << "Ключи:\n"
+                      << "p = " << keys.p << "\n"
+                      << "q = " << keys.q << ", g = " << keys.g << "\n"
+                      << "x = " << keys.x << "\n"
+                      << "y = " << keys.y << "\n";
+        }
+
+        if (mode == 1) {
+            std::string infile, outfile;
+            std::cout << "Введите имя файла который будет подписан и файл с "
+                         "подписью: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, q, g, x, y: ";
+                std::cin >> keys.p >> keys.q >> keys.g >> keys.x >> keys.y;
+            }
+            dsa_signature(infile, outfile, keys);
+            std::cout << "Файл подписан.\n";
+        } else if (mode == 2) {
+            std::string infile, outfile;
+            std::cout << "Введите имя файла для проверки подписи и файл с "
+                         "подписью: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, q, g, x, y: ";
+                std::cin >> keys.p >> keys.q >> keys.g >> keys.x >> keys.y;
+            }
+            std::string s;
+            dsa_signature_check(infile, outfile, keys)
                     ? s = "Подпись корректна"
                     : s = "Подпись не корректна";
             std::cout << s << '\n';

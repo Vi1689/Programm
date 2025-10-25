@@ -115,3 +115,39 @@ bool elgamal_signature_check(
         const std::string& input_file,
         const std::string& output_file,
         const ElGamalKeys& keys);
+
+// ЛР 10
+struct GOST94Keys {
+    long int p; // большое простое число
+    long int q; // делитель p - 1
+    long int a; // генератор подгруппы
+    long int x; // закрытый ключ
+    long int y; // открытый ключ (y = a^x mod p)
+};
+GOST94Keys generate_gost94_keys(int min_p = 256, int max_p = 1000);
+void gost94_signature(
+        const std::string& input_file,
+        const std::string& output_file,
+        const GOST94Keys& keys);
+bool gost94_signature_check(
+        const std::string& input_file,
+        const std::string& output_file,
+        const GOST94Keys& keys);
+
+// ЛР 11
+struct DSAKeys {
+    long int p; // большое простое число
+    long int q; // простое число, делитель p-1
+    long int g; // генератор
+    long int x; // закрытый ключ
+    long int y; // открытый ключ
+};
+DSAKeys generate_dsa_keys(int min_p = 256, int max_p = 1000);
+void dsa_signature(
+        const std::string& input_file,
+        const std::string& output_file,
+        const DSAKeys& keys);
+bool dsa_signature_check(
+        const std::string& input_file,
+        const std::string& output_file,
+        const DSAKeys& keys);

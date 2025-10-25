@@ -18,6 +18,7 @@ void print_menu()
                "8. Шифровка/расшифровка при помощи шифра RSA\n",
                "9. Шифровка/расшифровка при помощи шифра Вернама\n",
                "10. Электронная подпись RSA\n",
+               "11. Электронная подпись Эль-Гамаля\n",
                "Выберите пункт: "};
     for (const auto& line : s)
         std::cout << line;
@@ -314,6 +315,49 @@ int main()
             }
             std::string s;
             rsa_signature_check(infile, outfile, keys)
+                    ? s = "Подпись корректна"
+                    : s = "Подпись не корректна";
+            std::cout << s << '\n';
+        }
+    } else if (choice == 11) {
+        int mode;
+        std::cout << "1. Подпись файла\n2. "
+                     "Проверка подписи файла\nВыберите режим: ";
+        std::cin >> mode;
+
+        ElGamalKeys keys;
+
+        if (input_choice != 1) {
+            keys = generate_elgamal_keys();
+            std::cout << "Ключи:\n"
+                      << "p = " << keys.p << "\n"
+                      << "g = " << keys.g << ", x = " << keys.x << "\n";
+        }
+
+        if (mode == 1) {
+            std::string infile, outfile;
+            std::cout << "Введите имя файла который будет подписан и файл с "
+                         "подписью: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, g, x: ";
+                std::cin >> keys.p >> keys.g >> keys.x;
+            }
+            elgamal_signature(infile, outfile, keys);
+            std::cout << "Файл подписан.\n";
+        } else if (mode == 2) {
+            std::string infile, outfile;
+            std::cout << "Введите имя файла для проверки подписи и файл с "
+                         "подписью: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, g, x: ";
+                std::cin >> keys.p >> keys.g >> keys.x;
+            }
+            std::string s;
+            elgamal_signature_check(infile, outfile, keys)
                     ? s = "Подпись корректна"
                     : s = "Подпись не корректна";
             std::cout << s << '\n';

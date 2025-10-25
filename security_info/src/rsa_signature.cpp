@@ -1,12 +1,11 @@
 #include "../include/info_protection.hpp"
-#include <vector>
 
 void rsa_signature(
         const std::string& input_file,
         const std::string& output_file,
         const RSA& keys)
 {
-    std::string s = calculate_md5(input_file);
+    std::string s = calculate_sha256(input_file);
 
     long int n = keys.p * keys.q;
     long int phi = (keys.p - 1) * (keys.q - 1);

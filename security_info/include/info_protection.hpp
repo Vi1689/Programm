@@ -5,7 +5,7 @@
 #include <fstream>
 #include <gmpxx.h>
 #include <iomanip>
-#include <openssl/md5.h>
+#include <openssl/sha.h>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -14,7 +14,7 @@
 
 long int generate_random(const long int& min, const long int& max);
 long int generate_prime(const long int& min, const long int& max);
-std::string calculate_md5(const std::string& filename);
+std::string calculate_sha256(const std::string& filename);
 std::vector<long int> read_hex(const std::string& hex_filename);
 bool write_hex(
         const std::vector<long int>& data, const std::string& hex_filename);
@@ -105,3 +105,13 @@ bool rsa_signature_check(
         const std::string& input_file,
         const std::string& output_file,
         const RSA& keys);
+
+// ЛР 9
+void elgamal_signature(
+        const std::string& input_file,
+        const std::string& output_file,
+        const ElGamalKeys& keys);
+bool elgamal_signature_check(
+        const std::string& input_file,
+        const std::string& output_file,
+        const ElGamalKeys& keys);

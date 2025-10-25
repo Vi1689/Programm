@@ -7,8 +7,6 @@ bool write_hex(
     if (!hex_file.is_open())
         throw std::runtime_error("Ошибка открытия файла");
 
-    const int hex_width = sizeof(long int);
-
     for (const auto& value : data) {
         hex_file << std::hex << value << '\n';
     }

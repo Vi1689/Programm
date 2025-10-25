@@ -17,6 +17,7 @@ void print_menu()
                "7. Шифровка/расшифровка при помощи шифра Эль-Гамаля\n",
                "8. Шифровка/расшифровка при помощи шифра RSA\n",
                "9. Шифровка/расшифровка при помощи шифра Вернама\n",
+               "10. Электронная подпись RSA\n",
                "Выберите пункт: "};
     for (const auto& line : s)
         std::cout << line;
@@ -273,6 +274,49 @@ int main()
             }
             vernam_decrypt_file(infile, outfile, key);
             std::cout << "Файл расшифрован.\n";
+        }
+    } else if (choice == 10) {
+        int mode;
+        std::cout << "1. Подпись файла\n2. "
+                     "Проверка подписи файла\nВыберите режим: ";
+        std::cin >> mode;
+
+        RSA keys;
+
+        if (input_choice != 1) {
+            keys = generate_rsa_keys();
+            std::cout << "Ключи:\n"
+                      << "p = " << keys.p << "\n"
+                      << "q = " << keys.q << ", d = " << keys.d << "\n";
+        }
+
+        if (mode == 1) {
+            std::string infile, outfile;
+            std::cout << "Введите имя файла который будет подписан и файл с "
+                         "подписью: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, q, d: ";
+                std::cin >> keys.p >> keys.q >> keys.d;
+            }
+            rsa_signature(infile, outfile, keys);
+            std::cout << "Файл подписан.\n";
+        } else if (mode == 2) {
+            std::string infile, outfile;
+            std::cout << "Введите имя файла для проверки подписи и файл с "
+                         "подписью: ";
+            std::cin >> infile >> outfile;
+
+            if (input_choice == 1) {
+                std::cout << "Введите p, q, d: ";
+                std::cin >> keys.p >> keys.q >> keys.d;
+            }
+            std::string s;
+            rsa_signature_check(infile, outfile, keys)
+                    ? s = "Подпись корректна"
+                    : s = "Подпись не корректна";
+            std::cout << s << '\n';
         }
     } else {
         std::cout << "Неверный выбор!\n";

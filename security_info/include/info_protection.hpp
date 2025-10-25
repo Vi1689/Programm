@@ -4,6 +4,8 @@
 #include <ctime>
 #include <fstream>
 #include <gmpxx.h>
+#include <iomanip>
+#include <openssl/md5.h>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -12,6 +14,10 @@
 
 long int generate_random(const long int& min, const long int& max);
 long int generate_prime(const long int& min, const long int& max);
+std::string calculate_md5(const std::string& filename);
+std::vector<long int> read_hex(const std::string& hex_filename);
+bool write_hex(
+        const std::vector<long int>& data, const std::string& hex_filename);
 
 // ЛР1
 long int mod_pow(long int a, long int x, long int p);
@@ -89,3 +95,13 @@ void vernam_decrypt_file(
         const std::string& input_file,
         const std::string& output_file,
         const keys& key);
+
+// ЛР 8
+void rsa_signature(
+        const std::string& input_file,
+        const std::string& output_file,
+        const RSA& keys);
+bool rsa_signature_check(
+        const std::string& input_file,
+        const std::string& output_file,
+        const RSA& keys);

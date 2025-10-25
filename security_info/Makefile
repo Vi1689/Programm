@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -Wall -O2 -Iinclude
-LDFLAGS = -lgmpxx -lgmp
+LDFLAGS = -lgmpxx -lgmp -lcrypto
 
 SRC = $(wildcard src/*.cpp)
 OBJ = $(SRC:.cpp=.o)

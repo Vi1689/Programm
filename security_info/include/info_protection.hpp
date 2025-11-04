@@ -151,3 +151,17 @@ bool dsa_signature_check(
         const std::string& input_file,
         const std::string& output_file,
         const DSAKeys& keys);
+
+// ЛР 13
+
+long int blind_message(
+        long int message,
+        long int e,
+        long int n,
+        long int& blinding_factor,
+        long int& unblinding_factor);
+long int sign_blinded_message(long int blinded_message, const RSA& keys);
+long int unblind_signature(
+        long int blinded_signature, long int unblinding_factor, long int n);
+bool verify_blind_signature(
+        long int message, long int signature, long int e, long int n);

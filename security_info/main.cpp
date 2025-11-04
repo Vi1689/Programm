@@ -21,6 +21,7 @@ void print_menu()
                "11. Электронная подпись Эль-Гамаля\n",
                "12. Электронная подпись ГОСТ Р 34.10-94\n",
                "13. Электронная подпись FIPS 186\n",
+               "14. Слепая подпись\n",
                "Выберите пункт: "};
     for (const auto& line : s)
         std::cout << line;
@@ -453,6 +454,122 @@ int main()
                     ? s = "Подпись корректна"
                     : s = "Подпись не корректна";
             std::cout << s << '\n';
+        }
+    } else if (choice == 14) {
+        std::cout << "Слепая подпись\n";
+
+        RSA keys;
+        long int n;
+
+        if (input_choice != 1) {
+            keys = generate_rsa_keys();
+            n = keys.p * keys.q;
+            std::cout << "Ключи:\n"
+                      << "p = " << keys.p << "\n"
+                      << "q = " << keys.q << ", d = " << keys.d << "\n";
+        }
+
+        if (input_choice == 1) {
+            std::cout << "Введите p, q, d: ";
+            std::cin >> keys.p >> keys.q >> keys.d;
+            n = keys.p * keys.q;
+        }
+
+        long int phi = (keys.p - 1) * (keys.q - 1);
+        long int e = 65537;
+        long int x, y;
+        if (e >= phi || gcd_extended(e, phi, x, y) != 1) {
+            e = 3;
+            while (gcd_extended(e, phi, x, y) != 1) {
+                e += 2;
+            }
+        }
+
+        int voter_id = 1;
+        bool end = false;
+
+        while (!end) {
+            std::cout << "\n--- Голосующий ID: " << voter_id << " ---\n";
+            std::cout << "Выберите вариант:\n";
+            std::cout << "1 - Да\n";
+            std::cout << "2 - Нет\n";
+            std::cout << "3 - Воздержался\n";
+            std::cout << "4 - Завершить голосование\n";
+            std::cout << "Ваш выбор: ";
+
+            int a;
+            std::cin >> a;
+
+            if (a < 1 || a > 4)
+                continue;
+
+            if (a == 4)
+                break;
+
+            long int m = voter_id * 1000 + a;
+
+            long int blinding_factor = 0, unblinding_factor = 0;
+
+            std::cout << "\n1. Создан бюллетень:\n";
+            std::cout << "   ID голосующего: " << voter_id << "\n";
+            std::cout << "   Выбор: " << a;
+            switch (a) {
+            case 1:
+                std::cout << " (Да)";
+                break;
+            case 2:
+                std::cout << " (Нет)";
+                break;
+            case 3:
+                std::cout << " (Воздержался)";
+                break;
+            }
+            std::cout << "\n   Исходное сообщение: " << m << "\n";
+
+            // Ослепление сообщения
+            auto blinded_message = blind_message(
+                    m, e, n, blinding_factor, unblinding_factor);
+
+            std::cout << "\n2. Ослепление сообщения:\n";
+            std::cout << "   Blinding factor (r): " << blinding_factor << "\n";
+            std::cout << "   Unblinding factor (r⁻¹): " << unblinding_factor
+                      << "\n";
+            std::cout << "   Ослепленное сообщение (m' = m * r^e mod n): "
+                      << blinded_message << "\n";
+
+            // Подпись ослепленного сообщения сервером
+            std::cout << "\n3. Подпись сервером:\n";
+            std::cout << "   Сервер видит только ослепленное сообщение: "
+                      << blinded_message << "\n";
+            long int blinded_signature
+                    = sign_blinded_message(blinded_message, keys);
+            std::cout << "   Подпись ослепленного сообщения (s' = m'^d mod n): "
+                      << blinded_signature << "\n";
+
+            // Снятие ослепления
+            auto signature = unblind_signature(
+                    blinded_signature, unblinding_factor, n);
+            std::cout << "\n4. Снятие ослепления:\n";
+            std::cout << "   Финальная подпись (s = s' * r⁻¹ mod n): "
+                      << signature << "\n";
+
+            // Проверка подписи
+            bool signature_valid = verify_blind_signature(m, signature, e, n);
+
+            std::cout << "\n5. Проверка подписи:\n";
+            std::cout << "   Проверка: m = s^e mod n\n";
+            std::cout << "   " << m << " = " << mod_pow(signature, e, n)
+                      << " mod " << n << "\n";
+            std::cout << "   Подпись "
+                      << (signature_valid ? " КОРРЕКТНА" : " НЕКОРРЕКТНА")
+                      << "\n";
+
+            if (signature_valid) {
+                std::cout << "    Бюллетень принят!\n";
+                voter_id++;
+            } else {
+                std::cout << "    Бюллетень отклонен!\n";
+            }
         }
     } else {
         std::cout << "Неверный выбор!\n";

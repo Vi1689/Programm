@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <time.h>
 
-#define NUM_ROUNDS 20
-
 int main()
 {
     int fd = create_sock(PORT_CLIENT, "0.0.0.0");

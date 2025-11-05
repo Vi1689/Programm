@@ -6,8 +6,6 @@
 #include <string.h>
 #include <time.h>
 
-#define NUM_ROUNDS 20
-
 struct client {
     long v, n;
     char name[32];

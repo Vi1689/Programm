@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <time.h>
 
+#define NUM_ROUNDS 20
+
 int main()
 {
     int fd = create_sock(PORT_CLIENT, "0.0.0.0");
@@ -18,14 +20,13 @@ int main()
     printf("Выберите режим: \n1. Вход\n2. Регистрация\n");
     scanf("%d", &input);
 
-    long n, v, s, y, r, x;
-    char e;
+    long n, v, s;
+    char name[32];
 
     if (input == 1) {
         printf("Введите s - ");
         scanf("%ld", &s);
         printf("Введите имя - ");
-        char name[32];
         scanf("%s", name);
         sprintf(send_buf, "in %s", name);
         my_send(fd, send_buf, sizeof(send_buf), server_addr);
@@ -45,10 +46,10 @@ int main()
 
     } else if (input == 2) {
         printf("Введите имя - ");
-        char name[32];
         scanf("%s", name);
         sprintf(send_buf, "reg %s", name);
         my_send(fd, send_buf, sizeof(send_buf), server_addr);
+
         // Генерация простых чисел
         long p = generate_prime(3, 1000);
         long q = generate_prime(3, 1000);
@@ -73,6 +74,10 @@ int main()
             return 0;
         }
 
+        // Отправляем параметры серверу
+        sprintf(send_buf, "%ld %ld", n, v);
+        my_send(fd, send_buf, sizeof(send_buf), server_addr);
+
     } else {
         printf("Неправильный выбор)\n");
         delete_sock(fd);
@@ -81,41 +86,60 @@ int main()
 
     printf("n = %ld\nv = %ld\ns = %ld\n", n, v, s);
 
-    // Шаг 1: Клиент отправил commitment
-    r = generate_random(2, n - 1);
-    x = mod_pow(r, 2, n);
+    int success_rounds = 0;
+    for (int round = 0; round < NUM_ROUNDS; ++round) {
+        printf("\n--- Раунд %d ---\n", round + 1);
 
-    printf("r = %ld\nx = %ld\n", r, x);
+        long r = generate_random(2, n - 1);
+        long x = mod_pow(r, 2, n);
 
-    sprintf(send_buf, "commitment %ld %ld %ld", x, v, n);
-    my_send(fd, send_buf, sizeof(send_buf), server_addr);
+        printf("r = %ld\nx = %ld\n", r, x);
 
-    // Шаг 2: Клиент получает challenge
-    my_recv(fd, recv_buf, sizeof(recv_buf), &server_addr);
+        sprintf(send_buf, "commitment %ld", x);
+        my_send(fd, send_buf, sizeof(send_buf), server_addr);
 
-    sscanf(recv_buf, "challenge %c", &e);
+        my_recv(fd, recv_buf, sizeof(recv_buf), &server_addr);
 
-    printf("e = %c\n", e);
+        char e;
+        sscanf(recv_buf, "challenge %c", &e);
 
-    // Шаг 3: Клиент вычисляет и отправил response
-    if (e == '0') {
-        y = r;
-    } else if (e == '1') {
-        y = (r * s) % n;
-    } else {
-        printf("Неверный вызов: %c\n", e);
-        delete_sock(fd);
-        return -1;
+        printf("e = %c\n", e);
+
+        long y;
+        if (e == '0') {
+            y = r;
+        } else if (e == '1') {
+            y = (r * s) % n;
+        } else {
+            printf("Неверный вызов: %c\n", e);
+            break;
+        }
+
+        printf("y = %ld\n", y);
+
+        sprintf(send_buf, "response %ld", y);
+        my_send(fd, send_buf, sizeof(send_buf), server_addr);
+
+        my_recv(fd, recv_buf, sizeof(recv_buf), &server_addr);
+
+        if (strcmp(recv_buf, "УСПЕШНО") == 0) {
+            success_rounds++;
+            printf("Раунд %d: УСПЕШНО\n", round + 1);
+        } else {
+            printf("Раунд %d: НЕУДАЧА\n", round + 1);
+            break;
+        }
     }
 
-    printf("y = %ld\n", y);
+    printf("\n=== Финальный результат: %d/%d раундов ===\n",
+           success_rounds,
+           NUM_ROUNDS);
 
-    sprintf(send_buf, "response %ld", y);
-    my_send(fd, send_buf, sizeof(send_buf), server_addr);
-
-    // Шаг 4: Клиент получает результат верификации
-    my_recv(fd, recv_buf, sizeof(recv_buf), &server_addr);
-    printf("Результат аутентификации: %s\n", recv_buf);
+    if (success_rounds == NUM_ROUNDS) {
+        printf("Аутентификация УСПЕШНА!\n");
+    } else {
+        printf("Аутентификация НЕУДАЧНА!\n");
+    }
 
     delete_sock(fd);
     return 0;

@@ -6,6 +6,8 @@
 #include <string.h>
 #include <time.h>
 
+#define NUM_ROUNDS 20
+
 struct client {
     long v, n;
     char name[32];
@@ -55,6 +57,7 @@ int main()
 
         char add_client = 0;
         char name[32];
+        long client_n = 0, client_v = 0;
 
         int bytes = my_recv(fd, recv_buf, sizeof(recv_buf), &client_addr);
         if (bytes <= 0)
@@ -68,17 +71,21 @@ int main()
             for (i = 0; i < arr.size; ++i) {
                 if (!strcmp(arr.value[i].name, name)) {
                     found = 1;
+                    client_n = arr.value[i].n;
+                    client_v = arr.value[i].v;
                     break;
                 }
             }
 
             if (found) {
-                sprintf(send_buf, "%ld %ld", arr.value[i].n, arr.value[i].v);
+                sprintf(send_buf, "%ld %ld", client_n, client_v);
             } else {
                 sprintf(send_buf, "0 0");
             }
             my_send(fd, send_buf, sizeof(send_buf), client_addr);
-            continue;
+
+            if (!found)
+                continue;
 
         } else if (strstr(recv_buf, "reg ") == recv_buf) {
             strcpy(name, recv_buf + strlen("reg "));
@@ -103,57 +110,86 @@ int main()
             bytes = my_recv(fd, recv_buf, sizeof(recv_buf), &client_addr);
             if (bytes <= 0)
                 continue;
-        }
 
-        // Обработка commitment
-        long x, v, n;
-        if (sscanf(recv_buf, "commitment %ld %ld %ld", &x, &v, &n) != 3) {
-            printf("Неверный формат запроса: %s\n", recv_buf);
-            continue;
-        }
-
-        printf("n = %ld\nv = %ld\nx = %ld\n", n, v, x);
-
-        // Шаг 2: Сервер отправил challenge
-        char e = (rand() & 1) ? '1' : '0';
-        printf("e = %c\n", e);
-        sprintf(send_buf, "challenge %c", e);
-        my_send(fd, send_buf, sizeof(send_buf), client_addr);
-
-        // Шаг 3: Сервер получает response
-        bytes = my_recv(fd, recv_buf, sizeof(recv_buf), &client_addr);
-        if (bytes <= 0)
-            continue;
-
-        long y;
-        if (sscanf(recv_buf, "response %ld", &y) != 1) {
-            printf("Неверный формат ответа: %s\n", recv_buf);
-            continue;
-        }
-
-        printf("y = %ld\n", y);
-
-        // Шаг 4: Сервер проверяет response
-        int verified;
-        if (e == '0') {
-            verified = (mod_pow(y, 2, n) == (x % n));
+            if (sscanf(recv_buf, "%ld %ld", &client_n, &client_v) != 2) {
+                printf("Неверный формат параметров: %s\n", recv_buf);
+                continue;
+            }
         } else {
-            verified = (mod_pow(y, 2, n) == ((x * v) % n));
+            continue;
         }
 
-        sprintf(send_buf, "%s", verified ? "УСПЕШНО" : "НЕУДАЧА");
-        my_send(fd, send_buf, sizeof(send_buf), client_addr);
+        int success_rounds = 0;
+        for (int round = 0; round < NUM_ROUNDS; ++round) {
+            printf("\n--- Раунд %d ---\n", round + 1);
 
-        printf("Аутентификация %s\n", verified ? "УСПЕШНО" : "НЕУДАЧА");
+            bytes = my_recv(fd, recv_buf, sizeof(recv_buf), &client_addr);
+            if (bytes <= 0)
+                break;
 
-        if (verified && add_client) {
-            arr.size++;
-            arr.value = realloc(arr.value, arr.size * sizeof(struct client));
-            arr.value[arr.size - 1].n = n;
-            arr.value[arr.size - 1].v = v;
-            strcpy(arr.value[arr.size - 1].name, name);
+            long x;
+            if (sscanf(recv_buf, "commitment %ld", &x) != 1) {
+                printf("Неверный формат запроса: %s\n", recv_buf);
+                break;
+            }
 
-            printf("Новый клиент зарегистрирован: %s\n", name);
+            printf("n = %ld\nv = %ld\nx = %ld\n", client_n, client_v, x);
+
+            char e = (rand() & 1) ? '1' : '0';
+            printf("e = %c\n", e);
+            sprintf(send_buf, "challenge %c", e);
+            my_send(fd, send_buf, sizeof(send_buf), client_addr);
+
+            bytes = my_recv(fd, recv_buf, sizeof(recv_buf), &client_addr);
+            if (bytes <= 0)
+                break;
+
+            long y;
+            if (sscanf(recv_buf, "response %ld", &y) != 1) {
+                printf("Неверный формат ответа: %s\n", recv_buf);
+                break;
+            }
+
+            printf("y = %ld\n", y);
+
+            int verified;
+            if (e == '0') {
+                verified = (mod_pow(y, 2, client_n) == (x % client_n));
+            } else {
+                verified
+                        = (mod_pow(y, 2, client_n)
+                           == ((x * client_v) % client_n));
+            }
+
+            sprintf(send_buf, "%s", verified ? "УСПЕШНО" : "НЕУДАЧА");
+            my_send(fd, send_buf, sizeof(send_buf), client_addr);
+
+            if (verified) {
+                success_rounds++;
+                printf("Раунд %d: УСПЕШНО\n", round + 1);
+            } else {
+                printf("Раунд %d: НЕУДАЧА\n", round + 1);
+                break;
+            }
+        }
+
+        printf("\n=== Результат: %d/%d раундов ===\n",
+               success_rounds,
+               NUM_ROUNDS);
+
+        if (success_rounds == NUM_ROUNDS) {
+            printf("Аутентификация УСПЕШНА\n");
+            if (add_client) {
+                arr.size++;
+                arr.value
+                        = realloc(arr.value, arr.size * sizeof(struct client));
+                arr.value[arr.size - 1].n = client_n;
+                arr.value[arr.size - 1].v = client_v;
+                strcpy(arr.value[arr.size - 1].name, name);
+                printf("Новый клиент зарегистрирован: %s\n", name);
+            }
+        } else {
+            printf("Аутентификация НЕУДАЧНА\n");
         }
 
         printf("Текущие клиенты:\n");

@@ -32,9 +32,15 @@ int main()
         my_recv(fd, recv_buf, sizeof(recv_buf), &server_addr);
 
         if (sscanf(recv_buf, "%ld %ld", &n, &v) != 2) {
-            printf("Server error: %s\n", recv_buf);
+            printf("Ошибка сервера: %s\n", recv_buf);
             delete_sock(fd);
             return -1;
+        }
+
+        if (!n && !v) {
+            printf("Такого имени нет\n");
+            delete_sock(fd);
+            return 0;
         }
 
     } else if (input == 2) {
@@ -73,40 +79,43 @@ int main()
         return 0;
     }
 
-    printf("Client: n = %ld, v = %ld, s = %ld\n", n, v, s);
+    printf("n = %ld\nv = %ld\ns = %ld\n", n, v, s);
 
-    // Шаг 1: Клиент отправляет commitment
+    // Шаг 1: Клиент отправил commitment
     r = generate_random(2, n - 1);
     x = mod_pow(r, 2, n);
 
+    printf("r = %ld\nx = %ld\n", r, x);
+
     sprintf(send_buf, "commitment %ld %ld %ld", x, v, n);
-    printf("Client sending: %s\n", send_buf);
     my_send(fd, send_buf, sizeof(send_buf), server_addr);
 
     // Шаг 2: Клиент получает challenge
     my_recv(fd, recv_buf, sizeof(recv_buf), &server_addr);
-    printf("Client received: %s\n", recv_buf);
 
     sscanf(recv_buf, "challenge %c", &e);
 
-    // Шаг 3: Клиент вычисляет и отправляет response
+    printf("e = %c\n", e);
+
+    // Шаг 3: Клиент вычисляет и отправил response
     if (e == '0') {
         y = r;
     } else if (e == '1') {
         y = (r * s) % n;
     } else {
-        printf("Invalid challenge: %c\n", e);
+        printf("Неверный вызов: %c\n", e);
         delete_sock(fd);
         return -1;
     }
 
+    printf("y = %ld\n", y);
+
     sprintf(send_buf, "response %ld", y);
-    printf("Client sending: %s\n", send_buf);
     my_send(fd, send_buf, sizeof(send_buf), server_addr);
 
     // Шаг 4: Клиент получает результат верификации
     my_recv(fd, recv_buf, sizeof(recv_buf), &server_addr);
-    printf("Authentication result: %s\n", recv_buf);
+    printf("Результат аутентификации: %s\n", recv_buf);
 
     delete_sock(fd);
     return 0;

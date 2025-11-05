@@ -37,7 +37,7 @@ int main()
 
     int fd = create_sock(PORT_SERV, IP_SERV);
     if (fd < 0) {
-        printf("Failed to create socket\n");
+        printf("Не удалось создать сокет\n");
         return -1;
     }
 
@@ -48,7 +48,7 @@ int main()
 
     struct clients arr = {NULL, 0};
 
-    printf("Server started\n");
+    printf("Сервер запущен\n");
 
     while (!end) {
         struct sockaddr_in client_addr = {0};
@@ -56,12 +56,9 @@ int main()
         char add_client = 0;
         char name[32];
 
-        printf("Server waiting for message...\n");
         int bytes = my_recv(fd, recv_buf, sizeof(recv_buf), &client_addr);
         if (bytes <= 0)
             continue;
-
-        printf("Server received: %s\n", recv_buf);
 
         if (strstr(recv_buf, "in ")) {
             strcpy(name, recv_buf + strlen("in "));
@@ -106,33 +103,35 @@ int main()
             bytes = my_recv(fd, recv_buf, sizeof(recv_buf), &client_addr);
             if (bytes <= 0)
                 continue;
-            printf("Server received commitment: %s\n", recv_buf);
         }
 
         // Обработка commitment
         long x, v, n;
         if (sscanf(recv_buf, "commitment %ld %ld %ld", &x, &v, &n) != 3) {
-            printf("Invalid commitment format: %s\n", recv_buf);
+            printf("Неверный формат запроса: %s\n", recv_buf);
             continue;
         }
 
-        // Шаг 2: Сервер отправляет challenge
+        printf("n = %ld\nv = %ld\nx = %ld\n", n, v, x);
+
+        // Шаг 2: Сервер отправил challenge
         char e = (rand() & 1) ? '1' : '0';
+        printf("e = %c\n", e);
         sprintf(send_buf, "challenge %c", e);
-        printf("Server sending: %s\n", send_buf);
         my_send(fd, send_buf, sizeof(send_buf), client_addr);
 
         // Шаг 3: Сервер получает response
         bytes = my_recv(fd, recv_buf, sizeof(recv_buf), &client_addr);
         if (bytes <= 0)
             continue;
-        printf("Server received: %s\n", recv_buf);
 
         long y;
         if (sscanf(recv_buf, "response %ld", &y) != 1) {
-            printf("Invalid response format: %s\n", recv_buf);
+            printf("Неверный формат ответа: %s\n", recv_buf);
             continue;
         }
+
+        printf("y = %ld\n", y);
 
         // Шаг 4: Сервер проверяет response
         int verified;
@@ -142,11 +141,10 @@ int main()
             verified = (mod_pow(y, 2, n) == ((x * v) % n));
         }
 
-        sprintf(send_buf, "%s", verified ? "SUCCESS" : "FAIL");
-        printf("Server sending result: %s\n", send_buf);
+        sprintf(send_buf, "%s", verified ? "УСПЕШНО" : "НЕУДАЧА");
         my_send(fd, send_buf, sizeof(send_buf), client_addr);
 
-        printf("Authentication %s\n", verified ? "SUCCESS" : "FAIL");
+        printf("Аутентификация %s\n", verified ? "УСПЕШНО" : "НЕУДАЧА");
 
         if (verified && add_client) {
             arr.size++;
@@ -155,12 +153,12 @@ int main()
             arr.value[arr.size - 1].v = v;
             strcpy(arr.value[arr.size - 1].name, name);
 
-            printf("New client registered: %s\n", name);
+            printf("Новый клиент зарегистрирован: %s\n", name);
         }
 
-        printf("Current clients:\n");
+        printf("Текущие клиенты:\n");
         for (size_t i = 0; i < arr.size; ++i) {
-            printf("Name - %s, V - %ld, N - %ld\n",
+            printf("Имя - %s, V - %ld, N - %ld\n",
                    arr.value[i].name,
                    arr.value[i].v,
                    arr.value[i].n);
@@ -169,7 +167,7 @@ int main()
     }
 
     free(arr.value);
-    printf("The server is turned off\n");
+    printf("Сервер выключен\n");
     delete_sock(fd);
     return 0;
 }

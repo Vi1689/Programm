@@ -38,14 +38,12 @@ class GameState(Enum):
 class MentalPokerCrypto:
     def __init__(self, num_players):
         self.num_players = num_players
-        # учебный пример: Mersenne (примерная крупность). В проде лучше 2048+ бит.
         self.prime = 2**127 - 1
 
         self.player_keys = []
         self.player_inv_keys = []
         self._gen_keys()
 
-        # base value mapping для карт (1..52 -> случайные элементы группы)
         self.card_base_map = {}
         self.base_to_card_index = {}
         self._prepare_card_base_values()

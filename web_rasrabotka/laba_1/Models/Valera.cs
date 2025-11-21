@@ -2,14 +2,20 @@ namespace ValeraAPI.Models
 {
     public class Valera
     {
+        public int Id { get; set; }
+        public string Name { get; set; } = "Valera";
+
         public int Health { get; private set; }
         public int Mana { get; private set; }
         public int Cheerfulness { get; private set; }
         public int Fatigue { get; private set; }
         public int Money { get; private set; }
 
-        public Valera(int health = 100, int mana = 0, int cheerfulness = 0, int fatigue = 0, int money = 0)
+        public Valera() { }
+
+        public Valera(string name = "Valera", int health = 100, int mana = 0, int cheerfulness = 0, int fatigue = 0, int money = 0)
         {
+            Name = name;
             Health = Check(health, 0, 100);
             Mana = Check(mana, 0, 100);
             Cheerfulness = Check(cheerfulness, -10, 10);
@@ -24,7 +30,7 @@ namespace ValeraAPI.Models
             if (Mana >= 50 || Fatigue >= 10) return false;
 
             Cheerfulness = Check(Cheerfulness - 5, -10, 10);
-            Mana = Check(Mana - 30, 0, 100); 
+            Mana = Check(Mana - 30, 0, 100);
             Money += 100;
             Fatigue = Check(Fatigue + 70, 0, 100);
 

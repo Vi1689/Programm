@@ -6,45 +6,119 @@ namespace ValeraAPI.Services
 {
     public class ValeraService
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _db;
+        public ValeraService(AppDbContext db) => _db = db;
 
-        public ValeraService(AppDbContext context)
+        public async Task<List<Valera>> GetAllAsync() => await _db.Valeras.ToListAsync();
+
+        public async Task<Valera?> GetByIdAsync(int id) => await _db.Valeras.FindAsync(id);
+
+        public async Task<Valera> CreateAsync(Valera v)
         {
-            _context = context;
+            _db.Valeras.Add(v);
+            await _db.SaveChangesAsync();
+            return v;
         }
 
-        public async Task<List<Valera>> GetAllAsync()
+        public async Task<bool> UpdateAsync(Valera v)
         {
-            return await _context.Valeras.ToListAsync();
-        }
+            var exist = await _db.Valeras.FindAsync(v.Id);
+            if (exist is null) return false;
 
-        public async Task<Valera?> GetByIdAsync(int id)
-        {
-            return await _context.Valeras.FindAsync(id);
-        }
-
-        public async Task<Valera> CreateAsync(Valera valera)
-        {
-            _context.Valeras.Add(valera);
-            await _context.SaveChangesAsync();
-            return valera;
-        }
-
-        public async Task<bool> UpdateAsync(Valera valera)
-        {
-            _context.Valeras.Update(valera);
-            await _context.SaveChangesAsync();
+            exist = MapToExisting(exist, v);
+            _db.Valeras.Update(exist);
+            await _db.SaveChangesAsync();
             return true;
+        }
+
+        private Valera MapToExisting(Valera to, Valera from)
+        {
+            try
+            {
+                var nameProp = typeof(Valera).GetProperty("Name");
+                if (nameProp != null && nameProp.CanWrite) nameProp.SetValue(to, from.Name);
+
+                var moneyProp = typeof(Valera).GetProperty("Money");
+                if (moneyProp != null && moneyProp.CanWrite) moneyProp.SetValue(to, from.Money);
+            }
+            catch {  }
+
+            return to;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var valera = await _context.Valeras.FindAsync(id);
-            if (valera == null) return false;
-
-            _context.Valeras.Remove(valera);
-            await _context.SaveChangesAsync();
+            var v = await _db.Valeras.FindAsync(id);
+            if (v == null) return false;
+            _db.Valeras.Remove(v);
+            await _db.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<(bool Success, string? Error, Valera? Valera)> WorkAsync(int id)
+        {
+            var v = await _db.Valeras.FindAsync(id);
+            if (v == null) return (false, "NotFound", null);
+
+            var ok = v.GoWork();
+            if (!ok) return (false, "CannotWorkNow", v);
+
+            await _db.SaveChangesAsync();
+            return (true, null, v);
+        }
+
+        public async Task<(bool Success, Valera? Valera)> NatureAsync(int id)
+        {
+            var v = await _db.Valeras.FindAsync(id);
+            if (v == null) return (false, null);
+            v.ContemplateNature();
+            await _db.SaveChangesAsync();
+            return (true, v);
+        }
+
+        public async Task<(bool Success, Valera? Valera)> WineAsync(int id)
+        {
+            var v = await _db.Valeras.FindAsync(id);
+            if (v == null) return (false, null);
+            v.DrinkWineAndWatchSeries();
+            await _db.SaveChangesAsync();
+            return (true, v);
+        }
+
+        public async Task<(bool Success, Valera? Valera)> BarAsync(int id)
+        {
+            var v = await _db.Valeras.FindAsync(id);
+            if (v == null) return (false, null);
+            v.GoBar();
+            await _db.SaveChangesAsync();
+            return (true, v);
+        }
+
+        public async Task<(bool Success, Valera? Valera)> MarginalsAsync(int id)
+        {
+            var v = await _db.Valeras.FindAsync(id);
+            if (v == null) return (false, null);
+            v.DrinkWithMarginals();
+            await _db.SaveChangesAsync();
+            return (true, v);
+        }
+
+        public async Task<(bool Success, Valera? Valera)> MetroAsync(int id)
+        {
+            var v = await _db.Valeras.FindAsync(id);
+            if (v == null) return (false, null);
+            v.SingInMetro();
+            await _db.SaveChangesAsync();
+            return (true, v);
+        }
+
+        public async Task<(bool Success, Valera? Valera)> SleepAsync(int id)
+        {
+            var v = await _db.Valeras.FindAsync(id);
+            if (v == null) return (false, null);
+            v.Sleep();
+            await _db.SaveChangesAsync();
+            return (true, v);
         }
     }
 }

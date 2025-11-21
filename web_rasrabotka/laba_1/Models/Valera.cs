@@ -4,12 +4,11 @@ namespace ValeraAPI.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = "Valera";
-
-        public int Health { get; private set; } = 100;
-        public int Mana { get; private set; }
-        public int Cheerfulness { get; private set; }
-        public int Fatigue { get; private set; }
-        public int Money { get; private set; }
+        public int Health { get; /* private */ set; } = 100;
+        public int Mana { get; /* private */ set; }
+        public int Cheerfulness { get; /* private */ set; }
+        public int Fatigue { get; /* private */ set; }
+        public int Money { get; /* private */ set; }
 
         public Valera() { }
 

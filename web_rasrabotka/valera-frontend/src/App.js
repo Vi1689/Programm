@@ -1,16 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ValeraList from "./components/ValeraList";
-import ValeraStats from "./components/ValeraStats";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ValeraList from './components/ValeraList';
+import ValeraStats from './components/ValeraStats';
 
-function App() {
+export default function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
+        {}
         <Route path="/" element={<ValeraList />} />
+
+        {}
         <Route path="/valera/:id" element={<ValeraStats />} />
+
+        {}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
-
-export default App;

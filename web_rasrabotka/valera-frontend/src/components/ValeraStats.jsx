@@ -1,57 +1,50 @@
-import { useEffect, useState } from "react";
-import { getValera, action } from "../api/valeraApi";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getValera, action } from '../api/valeraApi';
+import { Button, ProgressBar, Card } from 'react-bootstrap';
 
 export default function ValeraStats() {
-    const { id } = useParams();
-    const [v, setV] = useState(null);
+  const { id } = useParams();
+  const [valera, setValera] = useState(null);
+  const navigate = useNavigate();
 
-    async function load() {
-        setV(await getValera(id));
-    }
+  useEffect(() => {
+    fetchValera();
+  }, []);
 
-    async function doAction(act) {
-        await action(id, act);
-        load();
-    }
+  const fetchValera = async () => {
+    const data = await getValera(id);
+    setValera(data);
+  };
 
-    useEffect(() => { load(); }, []);
+  const handleAction = async (act) => {
+    await action(id, act);
+    fetchValera();
+  };
 
-    if (!v) return <div>Загрузка...</div>;
+  if (!valera) return <div className="container mt-4">Загрузка...</div>;
 
-    return (
-        <div style={{ padding: 20 }}>
-            <h1>Валера: {v.name}</h1>
+  return (
+    <div className="container mt-4">
+      <Button variant="secondary" onClick={() => navigate(-1)}>Назад</Button>
+      <h2 className="mt-3">Валера {valera.id}</h2>
+      <Card className="p-3 mb-3">
+        <p>Health: <ProgressBar now={valera.health} label={valera.health} /></p>
+        <p>Mana: <ProgressBar now={valera.mana} label={valera.mana} /></p>
+        <p>Cheerfulness: <ProgressBar now={valera.cheerfulness + 10} max={20} label={valera.cheerfulness} /></p>
+        <p>Fatigue: <ProgressBar now={valera.fatigue} label={valera.fatigue} /></p>
+        <p>Money: {valera.money}</p>
+      </Card>
 
-            <p>Здоровье: {v.health}</p>
-            <progress value={v.health} max="100" />
-
-            <p>Алкоголь: {v.mana}</p>
-            <progress value={v.mana} max="100" />
-
-            <p>Жизнерадостность: {v.cheerfulness}</p>
-            <progress value={v.cheerfulness + 10} max="20" />
-
-            <p>Усталость: {v.fatigue}</p>
-            <progress value={v.fatigue} max="100" />
-
-            <p>Деньги: {v.money}</p>
-
-            <h2>Действия</h2>
-
-            <button
-                disabled={v.mana >= 50 || v.fatigue >= 10}
-                onClick={() => doAction("work")}
-            >
-                Пойти на работу
-            </button>
-
-            <button onClick={() => doAction("nature")}>Созерцать природу</button>
-            <button onClick={() => doAction("wine")}>Пить вино и смотреть сериал</button>
-            <button onClick={() => doAction("bar")}>Сходить в бар</button>
-            <button onClick={() => doAction("marginals")}>Выпить с маргиналами</button>
-            <button onClick={() => doAction("metro")}>Петь в метро</button>
-            <button onClick={() => doAction("sleep")}>Спать</button>
-        </div>
-    );
+      <div className="d-flex flex-wrap gap-2">
+        <Button onClick={() => handleAction('work')} disabled={valera.mana >= 50 || valera.fatigue >= 10}>Пойти на работу</Button>
+        <Button onClick={() => handleAction('nature')}>Созерцать природу</Button>
+        <Button onClick={() => handleAction('wine')}>Пить вино и смотреть сериал</Button>
+        <Button onClick={() => handleAction('bar')}>Сходить в бар</Button>
+        <Button onClick={() => handleAction('marginals')}>Выпить с маргинальными личностями</Button>
+        <Button onClick={() => handleAction('metro')}>Петь в метро</Button>
+        <Button onClick={() => handleAction('sleep')}>Спать</Button>
+      </div>
+    </div>
+  );
 }

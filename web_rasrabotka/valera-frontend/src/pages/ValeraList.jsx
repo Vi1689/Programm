@@ -1,0 +1,167 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getMyValeras, createValera, deleteValera } from '../api/valeraApi';
+import { Button, Table, Modal, Form, InputGroup, FormControl, Alert } from 'react-bootstrap';
+import { useAuth } from '../context/AuthContext';
+
+export default function ValeraList() {
+  const [valeras, setValeras] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [newValera, setNewValera] = useState({ name: '', health: 100, mana: 0, cheerfulness: 0, fatigue: 0, money: 0 });
+  const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    fetchValeras();
+  }, []);
+
+  const fetchValeras = async () => {
+    try {
+      setLoading(true);
+      const data = await getMyValeras();
+      setValeras(data);
+      setError('');
+    } catch (err) {
+      setError('Ошибка загрузки данных');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreate = async () => {
+    if (!newValera.name.trim()) {
+      alert("Имя Валеры не может быть пустым");
+      return;
+    }
+    try {
+      await createValera(newValera);
+      setShowModal(false);
+      setNewValera({ name: '', health: 100, mana: 0, cheerfulness: 0, fatigue: 0, money: 0 });
+      fetchValeras();
+    } catch (err) {
+      setError('Ошибка создания Валеры');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Удалить эту Валеру?')) return;
+    
+    try {
+      await deleteValera(id);
+      fetchValeras();
+    } catch (err) {
+      setError('Ошибка удаления');
+    }
+  };
+
+  const filteredValeras = valeras.filter(v => v.name.toLowerCase().includes(search.toLowerCase()));
+
+  if (loading) {
+    return (
+      <div className="container mt-4 text-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Загрузка...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mt-4">
+      <h2>Мои Валеры</h2>
+      <p className="text-muted">Пользователь: {user?.username} ({user?.email})</p>
+
+      {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
+
+      <InputGroup className="mb-3">
+        <FormControl
+          placeholder="Поиск по имени"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <Button variant="primary" onClick={() => setShowModal(true)}>
+          Создать Валеру
+        </Button>
+      </InputGroup>
+
+      {filteredValeras.length === 0 ? (
+        <Alert variant="info">
+          У вас пока нет Валер. Создайте первую!
+        </Alert>
+      ) : (
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Имя</th>
+              <th>Health</th>
+              <th>Mana</th>
+              <th>Cheerfulness</th>
+              <th>Fatigue</th>
+              <th>Money</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredValeras.map(v => (
+              <tr key={v.id}>
+                <td style={{cursor: 'pointer'}} onClick={() => navigate(`/valera/${v.id}`)}>{v.id}</td>
+                <td style={{cursor: 'pointer'}} onClick={() => navigate(`/valera/${v.id}`)}>{v.name}</td>
+                <td style={{cursor: 'pointer'}} onClick={() => navigate(`/valera/${v.id}`)}>{v.health}</td>
+                <td style={{cursor: 'pointer'}} onClick={() => navigate(`/valera/${v.id}`)}>{v.mana}</td>
+                <td style={{cursor: 'pointer'}} onClick={() => navigate(`/valera/${v.id}`)}>{v.cheerfulness}</td>
+                <td style={{cursor: 'pointer'}} onClick={() => navigate(`/valera/${v.id}`)}>{v.fatigue}</td>
+                <td style={{cursor: 'pointer'}} onClick={() => navigate(`/valera/${v.id}`)}>{v.money}</td>
+                <td>
+                  <Button variant="danger" size="sm" onClick={() => handleDelete(v.id)}>
+                    Удалить
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Создать Валеру</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-2">
+              <Form.Label>Имя</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Введите имя"
+                value={newValera.name}
+                onChange={e => setNewValera({...newValera, name: e.target.value})}
+              />
+            </Form.Group>
+            {Object.keys(newValera).filter(k => k !== 'name').map(key => (
+              <Form.Group key={key} className="mb-2">
+                <Form.Label>{key}</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={newValera[key]}
+                  onChange={e => setNewValera({...newValera, [key]: Number(e.target.value)})}
+                />
+              </Form.Group>
+            ))}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Отмена
+          </Button>
+          <Button variant="primary" onClick={handleCreate}>
+            Создать
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
+  );
+}

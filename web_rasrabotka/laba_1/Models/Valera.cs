@@ -4,11 +4,15 @@ namespace ValeraAPI.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = "Valera";
-        public int Health { get; /* private */ set; } = 100;
-        public int Mana { get; /* private */ set; }
-        public int Cheerfulness { get; /* private */ set; }
-        public int Fatigue { get; /* private */ set; }
-        public int Money { get; /* private */ set; }
+        public int Health { get; set; } = 100;
+        public int Mana { get; set; }
+        public int Cheerfulness { get; set; }
+        public int Fatigue { get; set; }
+        public int Money { get; set; }
+        
+        // НОВОЕ: Связь с пользователем
+        public int UserId { get; set; }
+        public User? User { get; set; }
 
         public Valera() { }
 

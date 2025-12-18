@@ -1,6 +1,5 @@
 const API_ROOT = "http://localhost:5097/api";
 
-// Получение заголовков с токеном
 const getHeaders = () => {
   const token = localStorage.getItem('token');
   return {
@@ -9,7 +8,6 @@ const getHeaders = () => {
   };
 };
 
-// ============= Auth endpoints =============
 export async function register(data) {
   return fetch(`${API_ROOT}/auth/register`, {
     method: 'POST',
@@ -26,30 +24,24 @@ export async function login(data) {
   }).then(r => r.json());
 }
 
-// ============= Valera endpoints =============
-
-// Получить всех Валер (только для админа)
 export async function getAllValeras() {
   return fetch(`${API_ROOT}/valera`, {
     headers: getHeaders()
   }).then(r => r.json());
 }
 
-// Получить своих Валер (для обычных пользователей)
 export async function getMyValeras() {
   return fetch(`${API_ROOT}/valera/my`, {
     headers: getHeaders()
   }).then(r => r.json());
 }
 
-// Получить конкретную Валеру
 export async function getValera(id) {
   return fetch(`${API_ROOT}/valera/${id}`, {
     headers: getHeaders()
   }).then(r => r.json());
 }
 
-// Создать Валеру
 export async function createValera(data) {
   return fetch(`${API_ROOT}/valera`, {
     method: 'POST',
@@ -58,7 +50,6 @@ export async function createValera(data) {
   }).then(r => r.json());
 }
 
-// Удалить Валеру
 export async function deleteValera(id) {
   return fetch(`${API_ROOT}/valera/${id}`, {
     method: 'DELETE',
@@ -66,7 +57,6 @@ export async function deleteValera(id) {
   });
 }
 
-// Выполнить действие
 export async function action(id, act) {
   return fetch(`${API_ROOT}/valera/${id}/${act}`, {
     method: 'POST',

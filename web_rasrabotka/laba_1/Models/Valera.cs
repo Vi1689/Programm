@@ -10,7 +10,6 @@ namespace ValeraAPI.Models
         public int Fatigue { get; set; }
         public int Money { get; set; }
         
-        // НОВОЕ: Связь с пользователем
         public int UserId { get; set; }
         public User? User { get; set; }
 

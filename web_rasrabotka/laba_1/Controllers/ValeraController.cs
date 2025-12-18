@@ -8,40 +8,34 @@ namespace ValeraAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // НОВОЕ: Все методы требуют авторизации
+    [Authorize]
     public class ValeraController : ControllerBase
     {
         private readonly ValeraService _service;
         public ValeraController(ValeraService service) => _service = service;
 
-        // НОВОЕ: Вспомогательные методы
         private int GetUserId() => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         private bool IsAdmin() => User.IsInRole("Admin");
 
-        // ИЗМЕНЕНО: Только для админов - все Валеры
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
 
-        // НОВОЕ: Для обычных пользователей - только свои Валеры
         [HttpGet("my")]
         public async Task<IActionResult> GetMy() => Ok(await _service.GetMyAsync(GetUserId()));
 
-        // ИЗМЕНЕНО: Проверка прав доступа
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
             var v = await _service.GetByIdAsync(id);
             if (v is null) return NotFound();
 
-            // НОВОЕ: Проверка прав доступа
             if (!IsAdmin() && v.UserId != GetUserId())
                 return Forbid();
 
             return Ok(v);
         }
 
-        // ИЗМЕНЕНО: Передается userId
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Valera v)
         {
@@ -49,14 +43,12 @@ namespace ValeraAPI.Controllers
             return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
 
-        // ИЗМЕНЕНО: Проверка прав
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Valera input)
         {
             var existing = await _service.GetByIdAsync(id);
             if (existing is null) return NotFound();
 
-            // НОВОЕ: Проверка прав доступа
             if (!IsAdmin() && existing.UserId != GetUserId())
                 return Forbid();
 
@@ -65,14 +57,12 @@ namespace ValeraAPI.Controllers
             return ok ? Ok(input) : NotFound();
         }
 
-        // ИЗМЕНЕНО: Проверка прав
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var existing = await _service.GetByIdAsync(id);
             if (existing is null) return NotFound();
 
-            // НОВОЕ: Проверка прав доступа
             if (!IsAdmin() && existing.UserId != GetUserId())
                 return Forbid();
 
@@ -80,7 +70,6 @@ namespace ValeraAPI.Controllers
             return ok ? Ok() : NotFound();
         }
 
-        // ИЗМЕНЕНО: Все действия с проверкой прав
         [HttpPost("{id}/work")]
         public async Task<IActionResult> Work(int id)
         {

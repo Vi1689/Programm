@@ -9,16 +9,13 @@ namespace ValeraAPI.Services
         private readonly AppDbContext _db;
         public ValeraService(AppDbContext db) => _db = db;
 
-        // НОВОЕ: Админ видит всех
         public async Task<List<Valera>> GetAllAsync() => await _db.Valeras.ToListAsync();
 
-        // НОВОЕ: Пользователь видит только своих
         public async Task<List<Valera>> GetMyAsync(int userId) => 
             await _db.Valeras.Where(v => v.UserId == userId).ToListAsync();
 
         public async Task<Valera?> GetByIdAsync(int id) => await _db.Valeras.FindAsync(id);
 
-        // ИЗМЕНЕНО: Добавлен userId
         public async Task<Valera> CreateAsync(Valera v, int userId)
         {
             v.UserId = userId;
@@ -62,7 +59,6 @@ namespace ValeraAPI.Services
             return true;
         }
 
-        // НОВОЕ: Проверка владения
         public async Task<bool> IsOwnerAsync(int valeraId, int userId)
         {
             var valera = await _db.Valeras.FindAsync(valeraId);

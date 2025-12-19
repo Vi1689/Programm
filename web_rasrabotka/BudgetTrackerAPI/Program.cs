@@ -88,7 +88,6 @@ using (var scope = app.Services.CreateScope())
             CreatedAt = DateTime.UtcNow
         };
         
-        // Используйте стандартный PasswordHasher из Microsoft.AspNetCore.Identity
         var passwordHasher = new PasswordHasher<User>();
         admin.PasswordHash = passwordHasher.HashPassword(admin, "admin123");
         

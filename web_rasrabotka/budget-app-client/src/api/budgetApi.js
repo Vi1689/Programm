@@ -42,7 +42,7 @@ const handleResponse = async (response) => {
     throw new Error(errorMessage);
   }
   
-  // Для пустых ответов (например, DELETE)
+  // Для пустых ответов
   if (response.status === 204) {
     return null;
   }

@@ -13,16 +13,27 @@ namespace BudgetAPI.Services
             _db = db;
         }
         
-        public async Task<List<User>> GetAllUsersAsync()
+        public async Task<List<UserDto>> GetAllUsersAsync()
         {
             return await _db.Users
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    Username = u.Username,
+                    Role = u.Role,
+                    CreatedAt = u.CreatedAt,
+                    TransactionsCount = u.Transactions.Count
+                })
                 .OrderBy(u => u.Id)
                 .ToListAsync();
         }
         
         public async Task<User?> GetUserByIdAsync(int id)
         {
-            return await _db.Users.FindAsync(id);
+            return await _db.Users
+                .Include(u => u.Transactions)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
         
         public async Task<bool> DeleteUserAsync(int id)
@@ -30,7 +41,6 @@ namespace BudgetAPI.Services
             var user = await _db.Users.FindAsync(id);
             if (user == null) return false;
             
-            // Can't delete admin accounts (or add logic to prevent deleting yourself)
             if (user.Role == "Admin")
             {
                 throw new InvalidOperationException("Нельзя удалить администратора");
@@ -62,7 +72,6 @@ namespace BudgetAPI.Services
             var totalUsers = await _db.Users.CountAsync();
             var totalTransactions = await _db.Transactions.CountAsync();
             
-            // Исправляем ошибку SQLite с суммированием decimal
             var allTransactions = await _db.Transactions.ToListAsync();
             
             var totalIncome = allTransactions
@@ -73,8 +82,8 @@ namespace BudgetAPI.Services
                 .Where(t => !t.IsIncome)
                 .Sum(t => t.Amount);
             
-            // Для последних транзакций используем DTO без циклических зависимостей
             var recentTransactions = await _db.Transactions
+                .Include(t => t.User)
                 .OrderByDescending(t => t.Date)
                 .Take(10)
                 .Select(t => new TransactionSimpleDto
@@ -85,7 +94,8 @@ namespace BudgetAPI.Services
                     Description = t.Description,
                     Date = t.Date,
                     IsIncome = t.IsIncome,
-                    UserId = t.UserId
+                    UserId = t.UserId,
+                    Username = t.User != null ? t.User.Username : ""
                 })
                 .ToListAsync();
             
@@ -118,5 +128,16 @@ namespace BudgetAPI.Services
         public DateTime Date { get; set; }
         public bool IsIncome { get; set; }
         public int UserId { get; set; }
+        public string Username { get; set; } = string.Empty;
+    }
+    
+    public class UserDto
+    {
+        public int Id { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public int TransactionsCount { get; set; }
     }
 }

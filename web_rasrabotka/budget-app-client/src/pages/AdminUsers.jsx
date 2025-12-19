@@ -8,6 +8,7 @@ import { getAllUsers, updateUserRole, deleteUser, getAdminStats } from '../api/b
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
+  const [sortedUsers, setSortedUsers] = useState([]);
   const [stats, setStats] = useState(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -15,10 +16,67 @@ export default function AdminUsers() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const { user: currentUser } = useAuth();
+  
+  // Конфигурация сортировки
+  const [sortConfig, setSortConfig] = useState({
+    key: 'id',
+    direction: 'asc'
+  });
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    // Сортируем пользователей
+    if (users.length === 0) {
+      setSortedUsers([]);
+      return;
+    }
+
+    const sorted = [...users].sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortConfig.key) {
+        case 'id':
+          aValue = a.id;
+          bValue = b.id;
+          break;
+        case 'username':
+          aValue = a.username.toLowerCase();
+          bValue = b.username.toLowerCase();
+          break;
+        case 'email':
+          aValue = a.email.toLowerCase();
+          bValue = b.email.toLowerCase();
+          break;
+        case 'role':
+          aValue = a.role.toLowerCase();
+          bValue = b.role.toLowerCase();
+          break;
+        case 'createdAt':
+          aValue = new Date(a.createdAt).getTime();
+          bValue = new Date(b.createdAt).getTime();
+          break;
+        case 'transactionsCount':
+          aValue = a.transactionsCount || 0;
+          bValue = b.transactionsCount || 0;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setSortedUsers(sorted);
+  }, [users, sortConfig]);
 
   const fetchData = async () => {
     try {
@@ -27,13 +85,54 @@ export default function AdminUsers() {
         getAllUsers(),
         getAdminStats()
       ]);
-      setUsers(usersData);
+      
+      // Преобразуем данные пользователей
+    const usersWithTransactions = usersData.map(user => ({
+      ...user,
+      transactionsCount: user.transactionsCount || 0
+    }));
+      
+      setUsers(usersWithTransactions);
       setStats(statsData);
       setError('');
     } catch (err) {
-      setError('Ошибка загрузки данных');
+      console.error('Ошибка загрузки данных:', err);
+      setError('Ошибка загрузки данных: ' + (err.message || 'Проверьте подключение к серверу'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSort = (key) => {
+    setSortConfig(prevConfig => {
+      // Если кликаем по тому же столбцу
+      if (prevConfig.key === key) {
+        // Меняем направление: asc -> desc -> asc
+        if (prevConfig.direction === 'asc') {
+          return { key, direction: 'desc' };
+        } else if (prevConfig.direction === 'desc') {
+          return { key, direction: 'asc' };
+        }
+      }
+      // Если кликаем по другому столбцу, начинаем с asc
+      return { key, direction: 'asc' };
+    });
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return '↕️';
+    return sortConfig.direction === 'asc' ? '⬆️' : '⬇️';
+  };
+
+  const getSortTitle = (key) => {
+    switch(key) {
+      case 'id': return 'ID';
+      case 'username': return 'Имя пользователя';
+      case 'email': return 'Email';
+      case 'role': return 'Роль';
+      case 'createdAt': return 'Дата регистрации';
+      case 'transactionsCount': return 'Транзакций';
+      default: return '';
     }
   };
 
@@ -41,9 +140,9 @@ export default function AdminUsers() {
     try {
       await updateUserRole(id, role);
       setShowRoleModal(false);
-      fetchData();
+      await fetchData();
     } catch (err) {
-      setError('Ошибка обновления роли');
+      setError('Ошибка обновления роли: ' + (err.message || 'Неизвестная ошибка'));
     }
   };
 
@@ -52,9 +151,9 @@ export default function AdminUsers() {
     
     try {
       await deleteUser(id);
-      fetchData();
+      await fetchData();
     } catch (err) {
-      setError('Ошибка удаления пользователя');
+      setError('Ошибка удаления пользователя: ' + (err.message || 'Неизвестная ошибка'));
     }
   };
 
@@ -102,7 +201,7 @@ export default function AdminUsers() {
           <Card className="text-center">
             <Card.Body>
               <Card.Title>Общий доход</Card.Title>
-              <h3 className="text-success">₽{stats?.totalIncome?.toFixed(2) || '0.00'}</h3>
+              <h3 className="text-success">{stats?.totalIncome?.toFixed(2) || '0.00'} ₽</h3>
             </Card.Body>
           </Card>
         </Col>
@@ -110,7 +209,7 @@ export default function AdminUsers() {
           <Card className="text-center">
             <Card.Body>
               <Card.Title>Общие расходы</Card.Title>
-              <h3 className="text-danger">₽{stats?.totalExpense?.toFixed(2) || '0.00'}</h3>
+              <h3 className="text-danger">{stats?.totalExpense?.toFixed(2) || '0.00'} ₽</h3>
             </Card.Body>
           </Card>
         </Col>
@@ -119,59 +218,177 @@ export default function AdminUsers() {
       {/* Список пользователей */}
       <Card>
         <Card.Body>
-          <Card.Title>Пользователи системы</Card.Title>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Имя пользователя</th>
-                <th>Email</th>
-                <th>Роль</th>
-                <th>Дата регистрации</th>
-                <th>Транзакций</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.username}</td>
-                  <td>{u.email}</td>
-                  <td>
-                    <Badge bg={u.role === 'Admin' ? 'danger' : 'secondary'}>
-                      {u.role}
-                    </Badge>
-                  </td>
-                  <td>{formatDate(u.createdAt)}</td>
-                  <td>{u.transactions?.length || 0}</td>
-                  <td>
-                    <Button 
-                      variant="outline-primary" 
-                      size="sm" 
-                      className="me-2"
-                      onClick={() => {
-                        setSelectedUser(u);
-                        setNewRole(u.role);
-                        setShowRoleModal(true);
-                      }}
-                      disabled={u.id === currentUser?.userId}
-                    >
-                      Роль
-                    </Button>
-                    <Button 
-                      variant="outline-danger" 
-                      size="sm"
-                      onClick={() => handleDeleteUser(u.id)}
-                      disabled={u.id === currentUser?.userId || u.role === 'Admin'}
-                    >
-                      Удалить
-                    </Button>
-                  </td>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <Card.Title className="mb-0">Пользователи системы</Card.Title>
+            <small className="text-muted">
+              Всего пользователей: {users.length}
+            </small>
+          </div>
+          
+          <div className="mb-3 p-2 bg-light rounded">
+            <small className="text-muted">
+              <strong>Текущая сортировка:</strong> {getSortTitle(sortConfig.key)} 
+              {sortConfig.direction === 'asc' ? ' по возрастанию (⬆️)' : ' по убыванию (⬇️)'}. 
+              Кликните на заголовок столбца для сортировки.
+            </small>
+          </div>
+          
+          <div className="table-responsive">
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th 
+                    style={{ 
+                      cursor: 'pointer', 
+                      userSelect: 'none',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onClick={() => handleSort('id')}
+                  >
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span>ID</span>
+                      <span className="ms-3 fs-6">
+                        {getSortIcon('id')}
+                      </span>
+                    </div>
+                  </th>
+                  <th 
+                    style={{ 
+                      cursor: 'pointer', 
+                      userSelect: 'none',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onClick={() => handleSort('username')}
+                  >
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span>Имя пользователя</span>
+                      <span className="ms-3 fs-6">
+                        {getSortIcon('username')}
+                      </span>
+                    </div>
+                  </th>
+                  <th 
+                    style={{ 
+                      cursor: 'pointer', 
+                      userSelect: 'none',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onClick={() => handleSort('email')}
+                  >
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span>Email</span>
+                      <span className="ms-3 fs-6">
+                        {getSortIcon('email')}
+                      </span>
+                    </div>
+                  </th>
+                  <th 
+                    style={{ 
+                      cursor: 'pointer', 
+                      userSelect: 'none',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onClick={() => handleSort('role')}
+                  >
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span>Роль</span>
+                      <span className="ms-3 fs-6">
+                        {getSortIcon('role')}
+                      </span>
+                    </div>
+                  </th>
+                  <th 
+                    style={{ 
+                      cursor: 'pointer', 
+                      userSelect: 'none',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onClick={() => handleSort('createdAt')}
+                  >
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span>Дата регистрации</span>
+                      <span className="ms-3 fs-6">
+                        {getSortIcon('createdAt')}
+                      </span>
+                    </div>
+                  </th>
+                  <th 
+                    style={{ 
+                      cursor: 'pointer', 
+                      userSelect: 'none',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onClick={() => handleSort('transactionsCount')}
+                  >
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span>Транзакций</span>
+                      <span className="ms-3 fs-6">
+                        {getSortIcon('transactionsCount')}
+                      </span>
+                    </div>
+                  </th>
+                  <th style={{ whiteSpace: 'nowrap' }}>Действия</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {sortedUsers.map(u => (
+                  <tr key={u.id}>
+                    <td><strong>{u.id}</strong></td>
+                    <td>{u.username}</td>
+                    <td>
+                      <a href={`mailto:${u.email}`} className="text-decoration-none">
+                        {u.email}
+                      </a>
+                    </td>
+                    <td>
+                      <Badge bg={u.role === 'Admin' ? 'danger' : 'secondary'}>
+                        {u.role === 'Admin' ? 'Админ' : 'Пользователь'}
+                      </Badge>
+                    </td>
+                    <td>{formatDate(u.createdAt)}</td>
+                    <td>
+                      <div className="d-flex align-items-center">
+                        <Badge bg={u.transactionsCount > 0 ? 'primary' : 'secondary'} className="me-2">
+                          {u.transactionsCount}
+                        </Badge>
+                        {u.transactionsCount > 0 && (
+                          <small className="text-muted">
+                            ({((u.transactionsCount / stats?.totalTransactions) * 100 || 0).toFixed(1)}%)
+                          </small>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="d-flex flex-wrap gap-1">
+                        <Button 
+                          variant="outline-primary" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedUser(u);
+                            setNewRole(u.role);
+                            setShowRoleModal(true);
+                          }}
+                          disabled={u.id === currentUser?.userId}
+                          title="Изменить роль"
+                        >
+                          Роль
+                        </Button>
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm"
+                          onClick={() => handleDeleteUser(u.id)}
+                          disabled={u.id === currentUser?.userId || u.role === 'Admin'}
+                          title="Удалить пользователя"
+                        >
+                          Удалить
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </Card.Body>
       </Card>
 
@@ -183,24 +400,38 @@ export default function AdminUsers() {
         <Modal.Body>
           {selectedUser && (
             <>
-              <p>Пользователь: <strong>{selectedUser.username}</strong></p>
-              <p>Текущая роль: <Badge bg={selectedUser.role === 'Admin' ? 'danger' : 'secondary'}>{selectedUser.role}</Badge></p>
+              <div className="mb-3">
+                <p><strong>ID:</strong> {selectedUser.id}</p>
+                <p><strong>Имя пользователя:</strong> {selectedUser.username}</p>
+                <p><strong>Email:</strong> {selectedUser.email}</p>
+                <p>
+                  <strong>Текущая роль:</strong> 
+                  <Badge bg={selectedUser.role === 'Admin' ? 'danger' : 'secondary'} className="ms-2">
+                    {selectedUser.role === 'Admin' ? 'Админ' : 'Пользователь'}
+                  </Badge>
+                </p>
+                <p><strong>Транзакций:</strong> {selectedUser.transactionsCount}</p>
+                <p><strong>Дата регистрации:</strong> {formatDate(selectedUser.createdAt)}</p>
+              </div>
               
-              <Form.Group className="mt-3">
-                <Form.Label>Новая роль:</Form.Label>
-                <div>
+              <hr />
+              
+              <Form.Group>
+                <Form.Label><strong>Выберите новую роль:</strong></Form.Label>
+                <div className="d-grid gap-2">
                   <Button
                     variant={newRole === 'User' ? 'secondary' : 'outline-secondary'}
-                    className="me-2"
+                    size="lg"
                     onClick={() => setNewRole('User')}
                   >
-                    User
+                    👤 Пользователь
                   </Button>
                   <Button
                     variant={newRole === 'Admin' ? 'danger' : 'outline-danger'}
+                    size="lg"
                     onClick={() => setNewRole('Admin')}
                   >
-                    Admin
+                    👑 Администратор
                   </Button>
                 </div>
               </Form.Group>
@@ -216,7 +447,7 @@ export default function AdminUsers() {
             onClick={() => handleRoleUpdate(selectedUser.id, newRole)}
             disabled={!selectedUser || selectedUser.role === newRole}
           >
-            Сохранить
+            Сохранить изменения
           </Button>
         </Modal.Footer>
       </Modal>

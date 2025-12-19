@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Table, Button, Modal, Form, Alert, 
-  InputGroup, FormControl, Badge 
+  InputGroup, FormControl, Badge, Dropdown 
 } from 'react-bootstrap';
 import { 
   getMyTransactions, createTransaction, 
   updateTransaction, deleteTransaction 
 } from '../api/budgetApi';
-import { getCategoriesByType, getCategories } from '../api/budgetApi';
+import { getCategories } from '../api/budgetApi';
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
+  const [sortedTransactions, setSortedTransactions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [formData, setFormData] = useState({
@@ -25,11 +26,65 @@ export default function Transactions() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState('all'); // all, income, expense
+  const [sortConfig, setSortConfig] = useState({
+    key: 'date',
+    direction: 'desc' // asc, desc
+  });
 
   useEffect(() => {
     fetchTransactions();
     fetchAllCategories();
   }, []);
+
+  useEffect(() => {
+    // Сортируем транзакции при изменении сортировки или фильтра
+    let filtered = transactions.filter(t => {
+      if (typeFilter === 'all') return true;
+      if (typeFilter === 'income') return t.isIncome;
+      if (typeFilter === 'expense') return !t.isIncome;
+      return true;
+    });
+
+    // Применяем сортировку
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortConfig.key) {
+        case 'date':
+          aValue = new Date(a.date).getTime();
+          bValue = new Date(b.date).getTime();
+          break;
+        case 'category':
+          aValue = a.category.toLowerCase();
+          bValue = b.category.toLowerCase();
+          break;
+        case 'description':
+          aValue = (a.description || '').toLowerCase();
+          bValue = (b.description || '').toLowerCase();
+          break;
+        case 'amount':
+          aValue = a.amount;
+          bValue = b.amount;
+          break;
+        case 'type':
+          aValue = a.isIncome ? 1 : 0;
+          bValue = b.isIncome ? 1 : 0;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setSortedTransactions(filtered);
+  }, [transactions, typeFilter, sortConfig]);
 
   const fetchTransactions = async () => {
     try {
@@ -48,10 +103,28 @@ export default function Transactions() {
   const fetchAllCategories = async () => {
     try {
       const data = await getCategories();
-      setCategories(data);
+      setCategories(data || []);
     } catch (err) {
       console.error('Ошибка загрузки категорий:', err);
     }
+  };
+
+  const handleSort = (key) => {
+    setSortConfig(prevConfig => {
+      // Если кликаем по тому же столбцу
+      if (prevConfig.key === key) {
+        // Меняем направление: desc -> asc -> desc
+        if (prevConfig.direction === 'desc') {
+          return { key, direction: 'asc' };
+        } else if (prevConfig.direction === 'asc') {
+          // Если уже asc и кликаем еще раз, остаемся на asc
+          // Или можно вернуть к исходной сортировке по дате
+          return { key, direction: 'desc' };
+        }
+      }
+      // Если кликаем по другому столбцу, начинаем с desc
+      return { key, direction: 'desc' };
+    });
   };
 
   const handleSubmit = async () => {
@@ -149,18 +222,22 @@ export default function Transactions() {
     });
   };
 
-  // Фильтрация транзакций по типу
-  const filteredTransactions = transactions.filter(t => {
-    if (typeFilter === 'all') return true;
-    if (typeFilter === 'income') return t.isIncome;
-    if (typeFilter === 'expense') return !t.isIncome;
-    return true;
-  });
-
   // Получение категорий для выпадающего списка
   const expenseCategories = categories.filter(c => c.type === 'Expense');
   const incomeCategories = categories.filter(c => c.type === 'Income');
   const availableCategories = formData.isIncome ? incomeCategories : expenseCategories;
+
+  // Функция для отображения значка сортировки
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return '↕️';
+    return sortConfig.direction === 'asc' ? '⬆️' : '⬇️';
+  };
+
+  // Получение текстового описания текущей сортировки
+  const getSortText = (key) => {
+    if (sortConfig.key !== key) return '';
+    return sortConfig.direction === 'asc' ? ' (возрастание)' : ' (убывание)';
+  };
 
   if (loading) {
     return (
@@ -181,33 +258,79 @@ export default function Transactions() {
         </Button>
       </div>
 
-      {/* Фильтры */}
+      {/* Фильтры и сортировка */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <Button 
+            variant={typeFilter === 'all' ? 'primary' : 'outline-primary'} 
+            className="me-2"
+            onClick={() => setTypeFilter('all')}
+          >
+            Все
+          </Button>
+          <Button 
+            variant={typeFilter === 'income' ? 'success' : 'outline-success'} 
+            className="me-2"
+            onClick={() => setTypeFilter('income')}
+          >
+            Доходы
+          </Button>
+          <Button 
+            variant={typeFilter === 'expense' ? 'danger' : 'outline-danger'}
+            onClick={() => setTypeFilter('expense')}
+          >
+            Расходы
+          </Button>
+        </div>
+        
+        <div className="d-flex align-items-center">
+          <span className="me-2 text-muted">Сортировка:</span>
+          <Dropdown>
+            <Dropdown.Toggle variant="outline-secondary" size="sm">
+              {sortConfig.key === 'date' ? 'Дата' : 
+               sortConfig.key === 'category' ? 'Категория' :
+               sortConfig.key === 'amount' ? 'Сумма' :
+               sortConfig.key === 'type' ? 'Тип' : 'Описание'}
+              {getSortIcon(sortConfig.key)}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => handleSort('date')}>
+                Дата {getSortIcon('date')}
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleSort('category')}>
+                Категория {getSortIcon('category')}
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleSort('description')}>
+                Описание {getSortIcon('description')}
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleSort('amount')}>
+                Сумма {getSortIcon('amount')}
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleSort('type')}>
+                Тип {getSortIcon('type')}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+      </div>
+
       <div className="mb-3">
-        <Button 
-          variant={typeFilter === 'all' ? 'primary' : 'outline-primary'} 
-          className="me-2"
-          onClick={() => setTypeFilter('all')}
-        >
-          Все
-        </Button>
-        <Button 
-          variant={typeFilter === 'income' ? 'success' : 'outline-success'} 
-          className="me-2"
-          onClick={() => setTypeFilter('income')}
-        >
-          Доходы
-        </Button>
-        <Button 
-          variant={typeFilter === 'expense' ? 'danger' : 'outline-danger'}
-          onClick={() => setTypeFilter('expense')}
-        >
-          Расходы
-        </Button>
+        <small className="text-muted">
+          Текущая сортировка: 
+          <strong>
+            {sortConfig.key === 'date' ? ' Дата' : 
+             sortConfig.key === 'category' ? ' Категория' :
+             sortConfig.key === 'amount' ? ' Сумма' :
+             sortConfig.key === 'type' ? ' Тип' : ' Описание'}
+            {sortConfig.direction === 'asc' ? ' по возрастанию' : ' по убыванию'}
+          </strong>
+          . Кликните на заголовок столбца для изменения сортировки.
+        </small>
       </div>
 
       {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
 
-      {filteredTransactions.length === 0 ? (
+      {sortedTransactions.length === 0 ? (
         <Alert variant="info">
           У вас пока нет транзакций. Добавьте первую!
         </Alert>
@@ -215,16 +338,81 @@ export default function Transactions() {
         <Table striped bordered hover responsive>
           <thead>
             <tr>
-              <th>Дата</th>
-              <th>Категория</th>
-              <th>Описание</th>
-              <th>Сумма</th>
-              <th>Тип</th>
+              <th 
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+                onClick={() => handleSort('date')}
+                className="position-relative"
+              >
+                <div className="d-flex justify-content-between align-items-center">
+                  <span>Дата</span>
+                  <span className="ms-2">
+                    {sortConfig.key === 'date' ? 
+                      (sortConfig.direction === 'asc' ? '⬆️' : '⬇️') : 
+                      '↕️'}
+                  </span>
+                </div>
+              </th>
+              <th 
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+                onClick={() => handleSort('category')}
+                className="position-relative"
+              >
+                <div className="d-flex justify-content-between align-items-center">
+                  <span>Категория</span>
+                  <span className="ms-2">
+                    {sortConfig.key === 'category' ? 
+                      (sortConfig.direction === 'asc' ? '⬆️' : '⬇️') : 
+                      '↕️'}
+                  </span>
+                </div>
+              </th>
+              <th 
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+                onClick={() => handleSort('description')}
+                className="position-relative"
+              >
+                <div className="d-flex justify-content-between align-items-center">
+                  <span>Описание</span>
+                  <span className="ms-2">
+                    {sortConfig.key === 'description' ? 
+                      (sortConfig.direction === 'asc' ? '⬆️' : '⬇️') : 
+                      '↕️'}
+                  </span>
+                </div>
+              </th>
+              <th 
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+                onClick={() => handleSort('amount')}
+                className="position-relative"
+              >
+                <div className="d-flex justify-content-between align-items-center">
+                  <span>Сумма</span>
+                  <span className="ms-2">
+                    {sortConfig.key === 'amount' ? 
+                      (sortConfig.direction === 'asc' ? '⬆️' : '⬇️') : 
+                      '↕️'}
+                  </span>
+                </div>
+              </th>
+              <th 
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+                onClick={() => handleSort('type')}
+                className="position-relative"
+              >
+                <div className="d-flex justify-content-between align-items-center">
+                  <span>Тип</span>
+                  <span className="ms-2">
+                    {sortConfig.key === 'type' ? 
+                      (sortConfig.direction === 'asc' ? '⬆️' : '⬇️') : 
+                      '↕️'}
+                  </span>
+                </div>
+              </th>
               <th>Действия</th>
             </tr>
           </thead>
           <tbody>
-            {filteredTransactions.map(t => (
+            {sortedTransactions.map(t => (
               <tr key={t.id}>
                 <td>{formatDate(t.date)}</td>
                 <td>
@@ -268,6 +456,38 @@ export default function Transactions() {
             ))}
           </tbody>
         </Table>
+      )}
+
+      {/* Статистика по отфильтрованным транзакциям */}
+      {sortedTransactions.length > 0 && (
+        <div className="mt-3 p-3 bg-light rounded">
+          <h5>Статистика по текущему виду:</h5>
+          <div className="row">
+            <div className="col-md-3">
+              <strong>Всего транзакций:</strong> {sortedTransactions.length}
+            </div>
+            <div className="col-md-3">
+              <strong>Доходы:</strong> 
+              <span className="text-success">
+                {' '}{sortedTransactions.filter(t => t.isIncome).reduce((sum, t) => sum + t.amount, 0).toFixed(2)} ₽
+              </span>
+            </div>
+            <div className="col-md-3">
+              <strong>Расходы:</strong> 
+              <span className="text-danger">
+                {' '}{sortedTransactions.filter(t => !t.isIncome).reduce((sum, t) => sum + t.amount, 0).toFixed(2)} ₽
+              </span>
+            </div>
+            <div className="col-md-3">
+              <strong>Баланс:</strong> 
+              <span className={sortedTransactions.filter(t => t.isIncome).reduce((sum, t) => sum + t.amount, 0) >= 
+                              sortedTransactions.filter(t => !t.isIncome).reduce((sum, t) => sum + t.amount, 0) ? 
+                              'text-success' : 'text-danger'}>
+                {' '}{sortedTransactions.reduce((sum, t) => t.isIncome ? sum + t.amount : sum - t.amount, 0).toFixed(2)} ₽
+              </span>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Модальное окно для добавления/редактирования транзакции */}
